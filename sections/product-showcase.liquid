@@ -1,0 +1,317 @@
+{%- liquid
+  assign section_id = section.id
+  assign product = section.settings.product
+-%}
+
+<section
+  id="product-showcase-{{ section_id }}"
+  class="product-showcase"
+  data-section-id="{{ section_id }}"
+>
+  <div class="product-showcase__inner">
+    <div class="product-showcase__visual">
+      {%- if section.settings.image != blank -%}
+        <img
+          src="{{ section.settings.image | image_url: width: 900 }}"
+          srcset="{{ section.settings.image | image_url: width: 500 }} 500w, {{ section.settings.image | image_url: width: 900 }} 900w"
+          sizes="(max-width: 768px) 100vw, 50vw"
+          alt="{{ section.settings.image.alt | default: section.settings.title | escape }}"
+          width="406"
+          height="397"
+          loading="lazy"
+        >
+      {%- elsif product != blank and product.featured_image != blank -%}
+        <img
+          src="{{ product.featured_image | image_url: width: 900 }}"
+          alt="{{ product.featured_image.alt | default: product.title | escape }}"
+          width="406"
+          height="397"
+          loading="lazy"
+        >
+      {%- else -%}
+        <img
+          src="{{ 'product-showcase-gloves.png' | asset_url }}"
+          alt="{{ section.settings.title | escape }}"
+          width="406"
+          height="397"
+          loading="lazy"
+        >
+      {%- endif -%}
+    </div>
+
+    <div class="product-showcase__specs">
+      {%- if section.settings.title != blank -%}
+        <h2 class="product-showcase__title">{{ section.settings.title }}</h2>
+      {%- endif -%}
+
+      <ul class="product-showcase__spec-list">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'spec' -%}
+            <li {{ block.shopify_attributes }}>
+              <span class="product-showcase__dot" aria-hidden="true"></span>
+              <span>{{ block.settings.text }}</span>
+            </li>
+          {%- endif -%}
+        {%- endfor -%}
+      </ul>
+
+      <p class="product-showcase__price">
+        {%- if product != blank -%}
+          {{ product.price | money }}
+        {%- else -%}
+          {{ section.settings.price }}
+        {%- endif -%}
+      </p>
+
+      {%- if product != blank -%}
+        {%- form 'product', product, class: 'product-showcase__form' -%}
+          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+          <button
+            type="submit"
+            class="product-showcase__cta"
+            {% unless product.available %}disabled{% endunless %}
+          >
+            <span>
+              {%- if product.available -%}
+                {{ section.settings.cta_label | default: 'Add to Cart' }}
+              {%- else -%}
+                Sold Out
+              {%- endif -%}
+            </span>
+            <span aria-hidden="true">&rarr;</span>
+          </button>
+        {%- endform -%}
+      {%- else -%}
+        <a class="product-showcase__cta" href="{{ section.settings.cta_link | default: '#' }}">
+          <span>{{ section.settings.cta_label | default: 'Add to Cart' }}</span>
+          <span aria-hidden="true">&rarr;</span>
+        </a>
+      {%- endif -%}
+
+      {%- if section.settings.note != blank -%}
+        <p class="product-showcase__note">{{ section.settings.note }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .product-showcase {
+    background: #000;
+    font-family: 'Montserrat', system-ui, sans-serif;
+  }
+
+  .product-showcase__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 64px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 48px;
+    align-items: center;
+    min-height: 480px;
+  }
+
+  .product-showcase__visual {
+    width: 100%;
+    aspect-ratio: 406 / 397;
+    max-width: 480px;
+  }
+
+  .product-showcase__visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  .product-showcase__specs {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 420px;
+  }
+
+  .product-showcase__title {
+    color: #fff;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.43;
+    margin: 0;
+  }
+
+  .product-showcase__spec-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .product-showcase__spec-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #e4e6ea;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.43;
+  }
+
+  .product-showcase__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ff6b1a;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  .product-showcase__price {
+    color: #fff;
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.33;
+    margin: 0;
+  }
+
+  .product-showcase__form {
+    margin: 0;
+    padding: 0;
+  }
+
+  .product-showcase__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #ff6b1a;
+    color: #fff;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.43;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    width: fit-content;
+    transition: opacity 150ms ease, transform 150ms ease;
+  }
+
+  .product-showcase__cta:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .product-showcase__cta:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .product-showcase__note {
+    color: #818286;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.33;
+    margin: 0;
+  }
+
+  @media (max-width: 900px) {
+    .product-showcase__inner {
+      grid-template-columns: 1fr;
+      padding: 32px 24px;
+      gap: 24px;
+    }
+
+    .product-showcase__specs {
+      max-width: none;
+    }
+
+    .product-showcase__title {
+      font-size: 22px;
+    }
+
+    .product-showcase__price {
+      font-size: 28px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product Showcase",
+  "tag": "section",
+  "class": "section-product-showcase",
+  "max_blocks": 10,
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product",
+      "info": "Connect a real product to enable Add-to-Cart. Leave empty to use static content."
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Product image",
+      "info": "Falls back to product's featured image, or the bundled default."
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "StretchSense Gaming Gloves"
+    },
+    {
+      "type": "text",
+      "id": "price",
+      "label": "Price (used when no product is linked)",
+      "default": "$495"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA label",
+      "default": "Add to Cart"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "CTA link (used when no product is linked)"
+    },
+    {
+      "type": "text",
+      "id": "note",
+      "label": "Note below CTA",
+      "default": "Free shipping worldwide"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "spec",
+      "name": "Spec bullet",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Bullet text",
+          "default": "Advanced motion tracking"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Showcase",
+      "blocks": [
+        { "type": "spec", "settings": { "text": "Advanced motion tracking" } },
+        { "type": "spec", "settings": { "text": "Haptic feedback" } },
+        { "type": "spec", "settings": { "text": "Bluetooth 5.0 + Wi-Fi" } },
+        { "type": "spec", "settings": { "text": "Up to 12+ hours battery life" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

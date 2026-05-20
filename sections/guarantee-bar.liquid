@@ -1,0 +1,175 @@
+{%- liquid
+  assign section_id = section.id
+-%}
+
+<section
+  id="guarantee-bar-{{ section_id }}"
+  class="guarantee-bar"
+  data-section-id="{{ section_id }}"
+>
+  <div class="guarantee-bar__inner">
+    {%- for block in section.blocks -%}
+      <div class="guarantee-bar__item" {{ block.shopify_attributes }}>
+        <span class="guarantee-bar__icon" aria-hidden="true">
+          {%- case block.settings.icon -%}
+            {%- when 'returns' -%}
+              <svg viewBox="0 0 24 24" fill="none" stroke="#ff6b1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                <polyline points="3 4 3 10 9 10"/>
+                <path d="M3.51 15a9 9 0 0 0 14.85 3.36L21 16"/>
+              </svg>
+            {%- when 'warranty' -%}
+              <svg viewBox="0 0 24 24" fill="none" stroke="#ff6b1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <polyline points="9 12 11 14 15 10"/>
+              </svg>
+            {%- when 'checkout' -%}
+              <svg viewBox="0 0 24 24" fill="none" stroke="#ff6b1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            {%- when 'shipping' -%}
+              <svg viewBox="0 0 24 24" fill="none" stroke="#ff6b1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="2" y1="12" x2="22" y2="12"/>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+              </svg>
+          {%- endcase -%}
+        </span>
+
+        <div class="guarantee-bar__text">
+          <p class="guarantee-bar__title">{{ block.settings.title }}</p>
+          <p class="guarantee-bar__subtitle">{{ block.settings.subtitle }}</p>
+        </div>
+      </div>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .guarantee-bar {
+    background: #06070a;
+    font-family: 'Montserrat', system-ui, sans-serif;
+  }
+
+  .guarantee-bar__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .guarantee-bar__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .guarantee-bar__icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 18px;
+    background: rgba(255, 107, 26, 0.18);
+    border: 1px solid rgba(255, 107, 26, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .guarantee-bar__icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .guarantee-bar__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .guarantee-bar__title {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.43;
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  .guarantee-bar__subtitle {
+    color: #818286;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.33;
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 900px) {
+    .guarantee-bar__inner {
+      padding: 24px;
+      justify-content: flex-start;
+    }
+
+    .guarantee-bar__item {
+      flex: 1 1 calc(50% - 12px);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Guarantee Bar",
+  "tag": "section",
+  "class": "section-guarantee-bar",
+  "max_blocks": 6,
+  "blocks": [
+    {
+      "type": "guarantee",
+      "name": "Guarantee",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "default": "returns",
+          "options": [
+            { "value": "returns", "label": "Returns" },
+            { "value": "warranty", "label": "Warranty (shield)" },
+            { "value": "checkout", "label": "Secure Checkout (lock)" },
+            { "value": "shipping", "label": "Global Shipping (globe)" }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "30-Day Returns"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle",
+          "default": "No-hassle returns"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Guarantee Bar",
+      "blocks": [
+        { "type": "guarantee", "settings": { "icon": "returns", "title": "30-Day Returns", "subtitle": "No-hassle returns" } },
+        { "type": "guarantee", "settings": { "icon": "warranty", "title": "1-Year Warranty", "subtitle": "We've got you covered" } },
+        { "type": "guarantee", "settings": { "icon": "checkout", "title": "Secure Checkout", "subtitle": "Shop with confidence" } },
+        { "type": "guarantee", "settings": { "icon": "shipping", "title": "Global Shipping", "subtitle": "Fast to 30+ countries" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
