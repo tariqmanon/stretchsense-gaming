@@ -4,6 +4,7 @@
   assign has_product = false
   assign can_add_to_cart = false
   assign cta_text = section.settings.cta_label | default: 'Add to Cart'
+  assign product_form_id = 'ProductShowcase-Form-' | append: section.id
 
   if product != blank
     assign has_product = true
@@ -131,7 +132,7 @@
           data-product-url="{{ product.url }}"
           on:submit="/handleSubmit"
         >
-          {%- form 'product', product, id: 'product-showcase-form-' | append: section.id, data-type: 'add-to-cart-form' -%}
+          {%- form 'product', product, id: product_form_id, data-type: 'add-to-cart-form' -%}
             <input
               type="hidden"
               name="id"
@@ -406,7 +407,7 @@
     },
     {
       "type": "header",
-      "content": "Static fallbacks (used only when no product is linked)"
+      "content": "Static fallbacks (no product linked)"
     },
     {
       "type": "text",
