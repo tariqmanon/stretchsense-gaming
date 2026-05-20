@@ -7,6 +7,44 @@
   <script src="{{ 'cart-drawer.js' | asset_url }}" type="module" fetchpriority="low"></script>
 {% endif %}
 
+<script>
+  (() => {
+    if (window.__headerGamingScrollInit) return;
+    window.__headerGamingScrollInit = true;
+
+    const header = document.querySelector('.header-gaming');
+    if (!header) return;
+
+    const threshold = 80;
+    const delta = 8;
+    let lastY = window.scrollY;
+    let ticking = false;
+
+    const update = () => {
+      const y = window.scrollY;
+      const diff = y - lastY;
+
+      if (y <= threshold) {
+        header.classList.remove('header-gaming--hidden');
+      } else if (diff > delta) {
+        header.classList.add('header-gaming--hidden');
+      } else if (diff < -delta) {
+        header.classList.remove('header-gaming--hidden');
+      }
+
+      lastY = y;
+      ticking = false;
+    };
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(update);
+        ticking = true;
+      }
+    }, { passive: true });
+  })();
+</script>
+
 <header
   id="header-gaming-{{ section_id }}"
   class="header-gaming"
@@ -65,11 +103,7 @@
       {%- capture cart_icon_markup -%}
         <cart-icon class="header-gaming__cart-icon{% unless cart == empty %} header-gaming__cart-icon--has-cart{% endunless %}">
           <span class="header-gaming__cart-svg" aria-hidden="true">
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M2 2h2.5l2 12h11l2-9H6"/>
-              <circle cx="8" cy="17" r="1.25"/>
-              <circle cx="16" cy="17" r="1.25"/>
-            </svg>
+            {{- 'icon-cart.svg' | inline_asset_content -}}
           </span>
           {%- render 'cart-bubble', limit: 100 -%}
         </cart-icon>
@@ -172,13 +206,29 @@
 
 {% stylesheet %}
   .header-gaming {
-    background: #000;
+    background: rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     color: #fff;
     font-family: 'Montserrat', system-ui, sans-serif;
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 50;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    transform: translateY(0);
+    transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    will-change: transform;
+  }
+
+  .header-gaming--hidden {
+    transform: translateY(-100%);
+  }
+
+  body {
+    --header-gaming-offset: 64px;
+    padding-top: var(--header-gaming-offset);
   }
 
   .header-gaming__inner {
@@ -260,57 +310,81 @@
   .header-gaming__cart-button {
     background: none;
     border: none;
-    padding: 0;
+    padding: 4px;
+    margin-left: 4px;
     cursor: pointer;
     color: #fff;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     text-decoration: none;
+    transition: color 150ms ease;
+  }
+
+  .header-gaming__cart-button:hover {
+    color: #ff6b1a;
   }
 
   .header-gaming__cart-icon {
-    --cart-bubble-size: 16px;
-    --cart-bubble-top: -4px;
-    --cart-bubble-right: -6px;
-
     position: relative;
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    color: #fff;
-  }
-
-  .header-gaming__cart-svg svg {
-    width: 20px;
-    height: 20px;
-    display: block;
-  }
-
-  .header-gaming__cart-icon .cart-bubble {
-    position: absolute;
-    top: var(--cart-bubble-top);
-    right: var(--cart-bubble-right);
-    background: #ff6b1a;
-    color: #fff;
-    border-radius: 10px;
-    min-width: var(--cart-bubble-size);
-    height: var(--cart-bubble-size);
-    padding: 0 4px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 10px;
-    font-weight: 700;
-    line-height: 1;
+    width: 24px;
+    height: 24px;
+    color: inherit;
+    --icon-stroke-width: 1.5;
   }
 
-  .header-gaming__cart-icon .cart-bubble__background {
+  .header-gaming__cart-svg {
+    display: inline-flex;
+    width: 24px;
+    height: 24px;
+  }
+
+  .header-gaming__cart-svg svg {
+    width: 24px;
+    height: 24px;
+    display: block;
+  }
+
+  /* Override theme cart-bubble defaults inside our header */
+  .header-gaming__cart-icon .cart-bubble {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    width: auto;
+    min-width: 16px;
+    height: 16px;
+    aspect-ratio: auto;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: transparent;
+  }
+
+  .header-gaming__cart-icon .cart-bubble.visually-hidden {
     display: none;
   }
 
+  .header-gaming__cart-icon .cart-bubble__background {
+    background: #ff6b1a;
+    border-radius: 999px;
+    inset: 0;
+  }
+
   .header-gaming__cart-icon .cart-bubble__text {
+    position: relative;
     color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+    z-index: 1;
+  }
+
+  .header-gaming__cart-icon .cart-bubble__text-count {
+    color: #fff;
+    font-family: 'Montserrat', system-ui, sans-serif;
+    font-weight: 700;
   }
 
   @media (max-width: 900px) {
