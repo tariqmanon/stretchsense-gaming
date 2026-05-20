@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "shopify-development": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/shopify-development/SKILL.md",
+      "computedHash": "d313d08c047304de15381b672aeb940b7fd0b2487213f00b4c1041ed17413138"
+    },
+    "shopify-liquid": {
+      "source": "shopify/shopify-ai-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/shopify-liquid/SKILL.md",
+      "computedHash": "1d23b00af4fac3dc22105559305f9d1f1d1bd03c1bb84ce6f86018230fdbbbeb"
+    },
+    "shopify-liquid-themes": {
+      "source": "benjaminsehl/liquid-skills",
+      "sourceType": "github",
+      "skillPath": "skills/shopify-liquid-themes/SKILL.md",
+      "computedHash": "ffbd442951b3c06c451d4fa39a7b7cc0dea3618976bdb87508621e7c561eabe7"
+    }
+  }
+}
