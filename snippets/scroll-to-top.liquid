@@ -1,0 +1,120 @@
+{%- doc -%}
+  Floating "scroll to top" button. Appears after scrolling past the threshold.
+{%- enddoc -%}
+
+<button
+  type="button"
+  class="scroll-to-top"
+  aria-label="Scroll to top"
+  data-scroll-to-top
+>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <polyline points="18 15 12 9 6 15"/>
+  </svg>
+</button>
+
+<style>
+  .scroll-to-top {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #ff6b1a;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 24px rgba(255, 107, 26, 0.35);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(16px) scale(0.9);
+    transition: opacity 250ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      transform 250ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 200ms ease,
+      background 200ms ease;
+    z-index: 60;
+    font-family: 'Montserrat', system-ui, sans-serif;
+  }
+
+  .scroll-to-top.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+  }
+
+  .scroll-to-top:hover {
+    background: #ff7a30;
+    box-shadow: 0 14px 32px rgba(255, 107, 26, 0.5);
+    transform: translateY(-2px) scale(1);
+  }
+
+  .scroll-to-top:active {
+    transform: translateY(0) scale(0.95);
+  }
+
+  .scroll-to-top svg {
+    width: 22px;
+    height: 22px;
+    display: block;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-to-top {
+      transition: opacity 150ms ease;
+      transform: none;
+    }
+    .scroll-to-top.is-visible,
+    .scroll-to-top:hover,
+    .scroll-to-top:active {
+      transform: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .scroll-to-top {
+      right: 16px;
+      bottom: 16px;
+      width: 44px;
+      height: 44px;
+    }
+  }
+</style>
+
+<script>
+  (() => {
+    if (window.__scrollToTopInit) return;
+    window.__scrollToTopInit = true;
+
+    const btn = document.querySelector('[data-scroll-to-top]');
+    if (!btn) return;
+
+    const threshold = 400;
+    let ticking = false;
+
+    const update = () => {
+      btn.classList.toggle('is-visible', window.scrollY > threshold);
+      ticking = false;
+    };
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(update);
+        ticking = true;
+      }
+    }, { passive: true });
+
+    btn.addEventListener('click', () => {
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({
+        top: 0,
+        behavior: prefersReducedMotion ? 'auto' : 'smooth'
+      });
+    });
+
+    update();
+  })();
+</script>

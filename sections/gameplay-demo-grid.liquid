@@ -9,7 +9,7 @@
 >
   <div class="gameplay-grid__inner">
     {%- if section.settings.heading != blank -%}
-      <h2 class="gameplay-grid__heading">{{ section.settings.heading }}</h2>
+      <h2 class="gameplay-grid__heading" data-reveal>{{ section.settings.heading }}</h2>
     {%- endif -%}
 
     <div class="gameplay-grid__items">
@@ -22,6 +22,8 @@
         <a
           href="{{ block.settings.video_url | default: '#' }}"
           class="gameplay-grid__card"
+          data-reveal
+          style="--i: {{ forloop.index0 }}"
           {{ block.shopify_attributes }}
           {% if block.settings.video_url contains 'youtube' or block.settings.video_url contains 'vimeo' %}target="_blank" rel="noopener"{% endif %}
         >
@@ -83,6 +85,14 @@
     line-height: 1.5;
     text-align: center;
     margin: 0;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 600ms cubic-bezier(0.2, 0.8, 0.2, 1), transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .gameplay-grid__heading.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   .gameplay-grid__items {
@@ -103,12 +113,23 @@
     overflow: hidden;
     text-decoration: none;
     background: #000;
-    transition: transform 200ms ease, border-color 200ms ease;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 600ms cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--i, 0) * 80ms + 150ms),
+      transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--i, 0) * 80ms + 150ms),
+      border-color 250ms ease,
+      box-shadow 250ms ease;
+  }
+
+  .gameplay-grid__card.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   .gameplay-grid__card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-4px);
     border-color: rgba(255, 107, 26, 0.55);
+    box-shadow: 0 12px 28px rgba(255, 107, 26, 0.15);
   }
 
   .gameplay-grid__thumb {
@@ -123,16 +144,26 @@
     height: 100%;
     object-fit: cover;
     display: block;
+    transition: transform 500ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .gameplay-grid__card:hover .gameplay-grid__thumb img {
+    transform: scale(1.06);
   }
 
   .gameplay-grid__play {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) scale(1);
     width: 32px;
     height: 32px;
     display: block;
+    transition: transform 250ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .gameplay-grid__card:hover .gameplay-grid__play {
+    transform: translate(-50%, -50%) scale(1.15);
   }
 
   .gameplay-grid__play svg {
@@ -147,6 +178,18 @@
     font-weight: 600;
     line-height: 1.43;
     margin: 0 0 10px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gameplay-grid__heading,
+    .gameplay-grid__card,
+    .gameplay-grid__thumb img,
+    .gameplay-grid__play {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+      opacity: 1 !important;
+    }
   }
 
   @media (max-width: 768px) {

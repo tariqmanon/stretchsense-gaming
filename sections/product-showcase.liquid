@@ -1,6 +1,17 @@
 {%- liquid
   assign section_id = section.id
   assign product = section.settings.product
+  assign can_add_to_cart = false
+  assign cta_text = section.settings.cta_label | default: 'Add to Cart'
+
+  if product != blank
+    assign variant = product.selected_or_first_available_variant
+    if variant.available
+      assign can_add_to_cart = true
+    else
+      assign cta_text = 'Sold Out'
+    endif
+  endif
 -%}
 
 <section
@@ -9,7 +20,7 @@
   data-section-id="{{ section_id }}"
 >
   <div class="product-showcase__inner">
-    <div class="product-showcase__visual">
+    <div class="product-showcase__visual" data-reveal data-reveal-from="left">
       {%- if section.settings.image != blank -%}
         <img
           src="{{ section.settings.image | image_url: width: 900 }}"
@@ -39,7 +50,7 @@
       {%- endif -%}
     </div>
 
-    <div class="product-showcase__specs">
+    <div class="product-showcase__specs" data-reveal data-reveal-from="right">
       {%- if section.settings.title != blank -%}
         <h2 class="product-showcase__title">{{ section.settings.title }}</h2>
       {%- endif -%}
@@ -47,7 +58,7 @@
       <ul class="product-showcase__spec-list">
         {%- for block in section.blocks -%}
           {%- if block.type == 'spec' -%}
-            <li {{ block.shopify_attributes }}>
+            <li {{ block.shopify_attributes }} style="--i: {{ forloop.index0 }}">
               <span class="product-showcase__dot" aria-hidden="true"></span>
               <span>{{ block.settings.text }}</span>
             </li>
@@ -64,23 +75,37 @@
       </p>
 
       {%- if product != blank -%}
-        {%- form 'product', product, class: 'product-showcase__form' -%}
-          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-          <button
-            type="submit"
-            class="product-showcase__cta"
-            {% unless product.available %}disabled{% endunless %}
-          >
-            <span>
-              {%- if product.available -%}
-                {{ section.settings.cta_label | default: 'Add to Cart' }}
-              {%- else -%}
-                Sold Out
-              {%- endif -%}
-            </span>
-            <span aria-hidden="true">&rarr;</span>
-          </button>
-        {%- endform -%}
+        <product-form-component
+          data-section-id="{{ section.id }}"
+          data-product-id="{{ product.id }}"
+          data-product-url="{{ product.url }}"
+          on:submit="/handleSubmit"
+        >
+          {%- form 'product', product, id: 'product-showcase-form-' | append: section.id, data-type: 'add-to-cart-form' -%}
+            <input
+              type="hidden"
+              name="id"
+              ref="variantId"
+              value="{{ product.selected_or_first_available_variant.id }}"
+            >
+            <add-to-cart-component
+              ref="addToCartButtonContainer"
+              data-product-variant-media="{{ product.featured_media.preview_image | image_url: width: 100 }}"
+            >
+              <button
+                type="submit"
+                name="add"
+                ref="addToCartButton"
+                on:click="/handleClick"
+                class="product-showcase__cta"
+                {% unless can_add_to_cart %}disabled{% endunless %}
+              >
+                <span>{{ cta_text }}</span>
+                <span aria-hidden="true">&rarr;</span>
+              </button>
+            </add-to-cart-component>
+          {%- endform -%}
+        </product-form-component>
       {%- else -%}
         <a class="product-showcase__cta" href="{{ section.settings.cta_link | default: '#' }}">
           <span>{{ section.settings.cta_label | default: 'Add to Cart' }}</span>
@@ -116,6 +141,15 @@
     width: 100%;
     aspect-ratio: 406 / 397;
     max-width: 480px;
+    opacity: 0;
+    transform: translateX(-32px);
+    transition: opacity 700ms cubic-bezier(0.2, 0.8, 0.2, 1), transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    will-change: transform, opacity;
+  }
+
+  .product-showcase__visual.is-revealed {
+    opacity: 1;
+    transform: translateX(0);
   }
 
   .product-showcase__visual img {
@@ -123,6 +157,7 @@
     height: 100%;
     object-fit: contain;
     display: block;
+    animation: product-float 7s ease-in-out infinite;
   }
 
   .product-showcase__specs {
@@ -130,6 +165,14 @@
     flex-direction: column;
     gap: 14px;
     max-width: 420px;
+    opacity: 0;
+    transform: translateX(32px);
+    transition: opacity 700ms cubic-bezier(0.2, 0.8, 0.2, 1) 100ms, transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1) 100ms;
+  }
+
+  .product-showcase__specs.is-revealed {
+    opacity: 1;
+    transform: translateX(0);
   }
 
   .product-showcase__title {
@@ -157,6 +200,14 @@
     font-size: 14px;
     font-weight: 400;
     line-height: 1.43;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 500ms ease calc(var(--i, 0) * 80ms + 200ms), transform 500ms ease calc(var(--i, 0) * 80ms + 200ms);
+  }
+
+  .product-showcase__specs.is-revealed .product-showcase__spec-list li {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   .product-showcase__dot {
@@ -166,6 +217,7 @@
     background: #ff6b1a;
     display: inline-block;
     flex-shrink: 0;
+    box-shadow: 0 0 6px rgba(255, 107, 26, 0.6);
   }
 
   .product-showcase__price {
@@ -174,11 +226,6 @@
     font-weight: 700;
     line-height: 1.33;
     margin: 0;
-  }
-
-  .product-showcase__form {
-    margin: 0;
-    padding: 0;
   }
 
   .product-showcase__cta {
@@ -197,17 +244,34 @@
     cursor: pointer;
     font-family: inherit;
     width: fit-content;
-    transition: opacity 150ms ease, transform 150ms ease;
+    position: relative;
+    overflow: hidden;
+    transition: transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 200ms ease;
+  }
+
+  .product-showcase__cta::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.25) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 600ms ease;
   }
 
   .product-showcase__cta:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(255, 107, 26, 0.4);
+  }
+
+  .product-showcase__cta:hover::after {
+    transform: translateX(100%);
   }
 
   .product-showcase__cta:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
   }
 
   .product-showcase__note {
@@ -216,6 +280,24 @@
     font-weight: 400;
     line-height: 1.33;
     margin: 0;
+  }
+
+  @keyframes product-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .product-showcase__visual img,
+    .product-showcase__visual,
+    .product-showcase__specs,
+    .product-showcase__spec-list li,
+    .product-showcase__cta {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+      opacity: 1 !important;
+    }
   }
 
   @media (max-width: 900px) {
@@ -250,7 +332,7 @@
       "type": "product",
       "id": "product",
       "label": "Product",
-      "info": "Connect a real product to enable Add-to-Cart. Leave empty to use static content."
+      "info": "Connect a real product to enable Add-to-Cart with cart drawer. Leave empty to use static content."
     },
     {
       "type": "image_picker",
