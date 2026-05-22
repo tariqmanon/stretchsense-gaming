@@ -190,31 +190,89 @@ body[data-template-product] {
   color: #a4a6ab;
 }
 
-/* Variant picker — small chip pills */
+/* Variant picker — chip pills on dark theme */
+
+/* Option group label ("Size") */
+.template-product .product-form__input legend,
 .template-product .product-form__input label,
-.template-product variant-picker label {
+.template-product variant-picker legend,
+.template-product variant-picker label.form__label,
+.template-product fieldset.variant-option > legend {
   color: #e4e6ea !important;
   font-family: 'Montserrat', system-ui, sans-serif !important;
+  font-size: 12px !important;
   font-weight: 500 !important;
+  margin-bottom: 8px !important;
 }
 
+/* Remove the wrapping fieldset border + blue focus outline */
+.template-product .variant-option,
+.template-product variant-picker fieldset,
+.template-product .product-form__input fieldset,
+.template-product variant-picker .product-form__input {
+  border: none !important;
+  outline: none !important;
+  padding: 0 !important;
+  margin: 0 0 16px 0 !important;
+}
+
+.template-product variant-picker fieldset:focus,
+.template-product variant-picker fieldset:focus-within {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Pill buttons — dark default, orange when selected */
 .template-product .variant-option__button-label,
-.template-product variant-picker .button {
-  border-color: rgba(255, 255, 255, 0.2) !important;
+.template-product variant-picker .button,
+.template-product .product-form__input--pill label,
+.template-product input[type='radio'] + label,
+.template-product .variant-option__button {
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
   color: #fff !important;
   font-family: 'Montserrat', system-ui, sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  border-radius: 8px !important;
+  padding: 10px 18px !important;
+  transition: border-color 200ms ease, background 200ms ease, color 200ms ease !important;
+  cursor: pointer;
+  min-width: auto !important;
+  height: auto !important;
 }
 
 .template-product .variant-option__button-label:hover,
-.template-product variant-picker .button:hover {
+.template-product variant-picker .button:hover,
+.template-product .product-form__input--pill label:hover,
+.template-product input[type='radio'] + label:hover {
   border-color: var(--gaming-orange) !important;
+  color: var(--gaming-orange) !important;
+  background: rgba(255, 107, 26, 0.06) !important;
 }
 
+/* Selected state — match by every flavor of selected marker */
 .template-product .variant-option__button-label[aria-selected='true'],
-.template-product variant-picker .button[aria-selected='true'] {
+.template-product .variant-option__button-label.is-active,
+.template-product .variant-option__button-label.selected,
+.template-product variant-picker .button[aria-selected='true'],
+.template-product variant-picker input[type='radio']:checked + label,
+.template-product input[type='radio']:checked + label,
+.template-product .product-form__input--pill input:checked + label {
   border-color: var(--gaming-orange) !important;
-  background: rgba(255, 107, 26, 0.12) !important;
+  background: rgba(255, 107, 26, 0.14) !important;
   color: var(--gaming-orange) !important;
+}
+
+/* Sold out variant */
+.template-product .variant-option__button-label[disabled],
+.template-product variant-picker .button[disabled],
+.template-product input[type='radio'][disabled] + label {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.3) !important;
+  cursor: not-allowed !important;
+  text-decoration: line-through !important;
+  background: transparent !important;
 }
 
 /* SKU / vendor labels */
