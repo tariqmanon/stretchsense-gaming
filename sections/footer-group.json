@@ -1,211 +1,97 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "type": "footer",
   "name": "Footer",
   "sections": {
-    "footer_m9NzUG": {
-      "type": "footer",
+    "footer_gaming": {
+      "type": "footer-gaming",
+      "settings": {
+        "brand_description": "We capture human motion and transform it into intelligence that powers robotics, immersive training, and next-generation gaming.",
+        "tagline": "<p>Human Intelligence.</p><p>Limitless Potential.</p>",
+        "newsletter_heading": "Stay Updated",
+        "newsletter_body": "Subscribe to get the latest insights, news, and updates from StretchSense.",
+        "newsletter_placeholder": "Enter your email",
+        "show_locale_selector": true
+      },
       "blocks": {
-        "group_H6VpwJ": {
-          "type": "group",
+        "col_platform": {
+          "type": "link_column",
           "settings": {
-            "content_direction": "column",
-            "vertical_on_mobile": true,
-            "horizontal_alignment": "flex-start",
-            "vertical_alignment": "center",
-            "align_baseline": false,
-            "horizontal_alignment_flex_direction_column": "flex-start",
-            "vertical_alignment_flex_direction_column": "center",
-            "gap": 6,
-            "width": "fill",
-            "custom_width": 100,
-            "width_mobile": "fill",
-            "custom_width_mobile": 100,
-            "height": "fit",
-            "custom_height": 100,
-            "inherit_color_scheme": true,
-            "color_scheme": "",
-            "background_media": "none",
-            "video_position": "cover",
-            "background_image_position": "cover",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_radius": 0,
-            "toggle_overlay": false,
-            "overlay_color": "#00000026",
-            "overlay_style": "solid",
-            "gradient_direction": "to top",
-            "link": "",
-            "open_in_new_tab": false,
-            "placeholder": "",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "text_LWt8Pz": {
-              "type": "text",
-              "settings": {
-                "text": "<h2>Join our email list</h2>",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "h4",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "color": "var(--color-foreground)",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "text_f9CFLH": {
-              "type": "text",
-              "settings": {
-                "text": "<p>Get exclusive deals and early access to new products.</p>",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "color": "var(--color-foreground)",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "text_LWt8Pz",
-            "text_f9CFLH"
-          ]
+            "heading": "PLATFORM",
+            "links_text": "Overview|#\nTechnology|#\nData Intelligence|#\nHardware|#\nAPI & Integrations|#\nSecurity|#"
+          }
         },
-        "email_signup_crihX7": {
-          "type": "email-signup",
+        "col_solutions": {
+          "type": "link_column",
           "settings": {
-            "width": "fill",
-            "custom_width": 100,
-            "inherit_color_scheme": true,
-            "heading": "",
-            "heading_preset": "h3",
-            "color_scheme": "",
-            "border_style": "all",
-            "border_width": 1,
-            "border_radius": 100,
-            "input_type_preset": "paragraph",
-            "style_class": "button-unstyled",
-            "display_type": "arrow",
-            "label": "Sign up",
-            "integrated_button": true,
-            "button_type_preset": "paragraph",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
+            "heading": "SOLUTIONS",
+            "links_text": "StretchSense Robotics|#\nStretchSense XR Training|#\nStretchSense Gaming|/"
+          }
+        },
+        "col_resources": {
+          "type": "link_column",
+          "settings": {
+            "heading": "RESOURCES",
+            "links_text": "Whitepapers|#\nCase Studies|#\nWebinars|#\nBlog|/blogs/news\nDatasets|#\nGuides|#\nEvents|#"
+          }
+        },
+        "col_company": {
+          "type": "link_column",
+          "settings": {
+            "heading": "COMPANY",
+            "links_text": "About Us|#\nCareers|#\nInvestors|#\nContact Us|/pages/contact"
+          }
+        },
+        "col_support": {
+          "type": "link_column",
+          "settings": {
+            "heading": "SUPPORT",
+            "links_text": "Documentation|#\nHelp Center|#\nDownloads|#\nGet in Touch|/pages/contact"
+          }
+        },
+        "trust_1": {
+          "type": "trust_card",
+          "settings": {
+            "icon": "shield",
+            "title": "Built with Trust",
+            "description": "Enterprise-grade security and privacy by design. Your data is protected at every layer.",
+            "cta_label": "Learn More",
+            "cta_link": "#"
+          }
+        },
+        "trust_2": {
+          "type": "trust_card",
+          "settings": {
+            "icon": "globe",
+            "title": "Global Presence",
+            "description": "Headquartered in Toronto, Canada with teams and partners around the world.",
+            "cta_label": "View Locations",
+            "cta_link": "#"
+          }
+        },
+        "trust_3": {
+          "type": "trust_card",
+          "settings": {
+            "icon": "leaf",
+            "title": "Sustainable Innovation",
+            "description": "We're committed to building technology that creates a smarter, safer, and more sustainable future.",
+            "cta_label": "Our Commitment",
+            "cta_link": "#"
+          }
         }
       },
       "block_order": [
-        "group_H6VpwJ",
-        "email_signup_crihX7"
-      ],
-      "name": "t:names.footer",
-      "settings": {
-        "section_width": "page-width",
-        "gap": 20,
-        "color_scheme": "scheme-1",
-        "padding-block-start": 30,
-        "padding-block-end": 30
-      }
-    },
-    "footer_utilities_jLGE8U": {
-      "type": "footer-utilities",
-      "blocks": {
-        "footer_copyright_jweRK8": {
-          "type": "footer-copyright",
-          "settings": {
-            "show_powered_by": true,
-            "font_size": "0.75rem",
-            "case": "none"
-          },
-          "blocks": {}
-        },
-        "footer_policy_list_VCdnpa": {
-          "type": "footer-policy-list",
-          "settings": {
-            "font_size": "0.75rem",
-            "case": "none"
-          },
-          "blocks": {}
-        },
-        "social_links_Ew63Kq": {
-          "type": "social-links",
-          "settings": {
-            "facebook_url": "https://www.facebook.com/",
-            "instagram_url": "https://www.instagram.com/",
-            "youtube_url": "https://www.youtube.com/",
-            "tiktok_url": "https://www.tiktok.com/",
-            "twitter_url": "https://x.com/",
-            "threads_url": "",
-            "linkedin_url": "",
-            "bluesky_url": "",
-            "snapchat_url": "",
-            "pinterest_url": "",
-            "tumblr_url": "",
-            "vimeo_url": "",
-            "custom_url": ""
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "footer_copyright_jweRK8",
-        "footer_policy_list_VCdnpa",
-        "social_links_Ew63Kq"
-      ],
-      "name": "t:names.utilities",
-      "settings": {
-        "section_width": "page-width",
-        "gap": 24,
-        "divider_thickness": 0,
-        "color_scheme": "",
-        "padding-block-start": 20,
-        "padding-block-end": 48
-      }
+        "col_platform",
+        "col_solutions",
+        "col_resources",
+        "col_company",
+        "col_support",
+        "trust_1",
+        "trust_2",
+        "trust_3"
+      ]
     }
   },
   "order": [
-    "footer_m9NzUG",
-    "footer_utilities_jLGE8U"
+    "footer_gaming"
   ]
 }

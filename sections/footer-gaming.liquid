@@ -1,0 +1,860 @@
+{%- liquid
+  assign section_id = section.id
+-%}
+
+<footer class="footer-gaming" id="footer-gaming-{{ section_id }}" role="contentinfo">
+  {%- comment -%} === TOP: brand + 5 link columns === {%- endcomment -%}
+  <div class="footer-gaming__top">
+    <div class="footer-gaming__brand">
+      <a href="{{ routes.root_url }}" class="footer-gaming__logo" aria-label="{{ shop.name }}">
+        {%- if section.settings.logo != blank -%}
+          <img
+            src="{{ section.settings.logo | image_url: width: 420 }}"
+            alt="{{ shop.name | escape }}"
+            width="{{ section.settings.logo.width }}"
+            height="{{ section.settings.logo.height }}"
+            loading="lazy"
+          >
+        {%- else -%}
+          <img
+            src="{{ 'stretchsense-logo-white.png' | asset_url }}"
+            alt="{{ shop.name | escape }}"
+            width="204"
+            height="48"
+            loading="lazy"
+          >
+        {%- endif -%}
+      </a>
+
+      {%- if section.settings.brand_description != blank -%}
+        <p class="footer-gaming__description">{{ section.settings.brand_description }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.tagline != blank -%}
+        <div class="footer-gaming__tagline">{{ section.settings.tagline }}</div>
+      {%- endif -%}
+
+      <div class="footer-gaming__social">
+        {%- if section.settings.linkedin_url != blank -%}
+          <a href="{{ section.settings.linkedin_url }}" class="footer-gaming__social-link" aria-label="LinkedIn" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.26 2.37 4.26 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.99 0 1.78-.77 1.78-1.72V1.72C24 .77 23.21 0 22.22 0z"/>
+            </svg>
+          </a>
+        {%- endif -%}
+        {%- if section.settings.twitter_url != blank -%}
+          <a href="{{ section.settings.twitter_url }}" class="footer-gaming__social-link" aria-label="X (Twitter)" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+          </a>
+        {%- endif -%}
+        {%- if section.settings.youtube_url != blank -%}
+          <a href="{{ section.settings.youtube_url }}" class="footer-gaming__social-link" aria-label="YouTube" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+          </a>
+        {%- endif -%}
+        {%- if section.settings.instagram_url != blank -%}
+          <a href="{{ section.settings.instagram_url }}" class="footer-gaming__social-link" aria-label="Instagram" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+            </svg>
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'link_column' -%}
+        <div class="footer-gaming__col" {{ block.shopify_attributes }}>
+          <p class="footer-gaming__col-heading">{{ block.settings.heading }}</p>
+          {%- if block.settings.menu != blank -%}
+            <ul class="footer-gaming__col-list">
+              {%- for link in linklists[block.settings.menu].links -%}
+                <li><a href="{{ link.url }}" class="footer-gaming__col-link">{{ link.title }}</a></li>
+              {%- endfor -%}
+            </ul>
+          {%- elsif block.settings.links_text != blank -%}
+            <ul class="footer-gaming__col-list">
+              {%- assign lines = block.settings.links_text | newline_to_br | split: '<br />' -%}
+              {%- for line in lines -%}
+                {%- assign parts = line | strip | split: '|' -%}
+                {%- if parts[0] != blank -%}
+                  <li><a href="{{ parts[1] | default: '#' | strip }}" class="footer-gaming__col-link">{{ parts[0] | strip }}</a></li>
+                {%- endif -%}
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+
+  {%- comment -%} === MIDDLE: 4 trust/newsletter cards === {%- endcomment -%}
+  <div class="footer-gaming__trust-row">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'trust_card' -%}
+        <div class="footer-gaming__trust-card" {{ block.shopify_attributes }}>
+          <span class="footer-gaming__trust-icon" aria-hidden="true">
+            {%- case block.settings.icon -%}
+              {%- when 'shield' -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="#ff6b1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+              {%- when 'globe' -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="#ff6b1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              {%- when 'leaf' -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="#ff6b1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v12a6 6 0 0 0 12 0V9c0-3.3-2.7-6-6-6H6z"/><line x1="6" y1="3" x2="18" y2="15"/></svg>
+              {%- when 'star' -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="#ff6b1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            {%- endcase -%}
+          </span>
+          <div class="footer-gaming__trust-body">
+            <p class="footer-gaming__trust-title">{{ block.settings.title }}</p>
+            <p class="footer-gaming__trust-desc">{{ block.settings.description }}</p>
+            {%- if block.settings.cta_label != blank -%}
+              <a class="footer-gaming__trust-cta" href="{{ block.settings.cta_link | default: '#' }}">
+                <span>{{ block.settings.cta_label }}</span>
+                <span aria-hidden="true">&rarr;</span>
+              </a>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- comment -%} Native Shopify newsletter signup — captures into Customers > Marketing list {%- endcomment -%}
+    <div class="footer-gaming__newsletter">
+      <p class="footer-gaming__trust-title">{{ section.settings.newsletter_heading }}</p>
+      <p class="footer-gaming__trust-desc">{{ section.settings.newsletter_body }}</p>
+
+      {%- form 'customer', class: 'footer-gaming__newsletter-form', id: 'NewsletterForm-' | append: section.id -%}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        {%- if form.posted_successfully? -%}
+          <p class="footer-gaming__newsletter-success" role="status">{{ 'general.newsletter.confirmation' | t | default: 'Thanks for subscribing!' }}</p>
+        {%- elsif form.errors -%}
+          <p class="footer-gaming__newsletter-error" role="alert">{{ form.errors.translated_fields.email }} {{ form.errors.messages.email }}</p>
+        {%- endif -%}
+
+        <div class="footer-gaming__newsletter-row">
+          <label class="visually-hidden" for="NewsletterEmail-{{ section.id }}">Email</label>
+          <input
+            id="NewsletterEmail-{{ section.id }}"
+            type="email"
+            name="contact[email]"
+            class="footer-gaming__newsletter-input"
+            placeholder="{{ section.settings.newsletter_placeholder | default: 'Enter your email' }}"
+            autocomplete="email"
+            required
+            value="{% if customer %}{{ customer.email }}{% endif %}"
+          >
+          <button type="submit" class="footer-gaming__newsletter-button" aria-label="Subscribe">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="2" y1="8" x2="14" y2="8"/>
+              <polyline points="9 3 14 8 9 13"/>
+            </svg>
+          </button>
+        </div>
+      {%- endform -%}
+    </div>
+  </div>
+
+  {%- comment -%} === BOTTOM: copyright + legal + language === {%- endcomment -%}
+  <div class="footer-gaming__divider"></div>
+  <div class="footer-gaming__bottom">
+    <div class="footer-gaming__legal">
+      <p class="footer-gaming__copyright">© {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved.</p>
+      <span class="footer-gaming__divider-vertical"></span>
+      <nav class="footer-gaming__legal-links" aria-label="Legal">
+        {%- if shop.privacy_policy.url -%}
+          <a href="{{ shop.privacy_policy.url }}">{{ shop.privacy_policy.title | default: 'Privacy Policy' }}</a>
+        {%- endif -%}
+        {%- if shop.terms_of_service.url -%}
+          <a href="{{ shop.terms_of_service.url }}">{{ shop.terms_of_service.title | default: 'Terms of Service' }}</a>
+        {%- endif -%}
+        {%- if shop.refund_policy.url -%}
+          <a href="{{ shop.refund_policy.url }}">{{ shop.refund_policy.title | default: 'Refund Policy' }}</a>
+        {%- endif -%}
+        <a href="#" id="open-cookies-{{ section_id }}" data-open-cookies>Cookies Settings</a>
+      </nav>
+    </div>
+
+    {%- if section.settings.show_locale_selector and localization.available_languages.size > 1 -%}
+      <div class="footer-gaming__language">
+        {%- form 'localization', id: 'FooterLocaleForm-' | append: section.id, class: 'footer-gaming__language-form' -%}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="2" y1="12" x2="22" y2="12"/>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+          <select
+            name="locale_code"
+            class="footer-gaming__language-select"
+            aria-label="Language"
+            onchange="this.form.submit()"
+          >
+            {%- for language in localization.available_languages -%}
+              <option value="{{ language.iso_code }}"{% if language.iso_code == localization.language.iso_code %} selected{% endif %}>
+                {{ language.endonym_name | capitalize }}
+              </option>
+            {%- endfor -%}
+          </select>
+        {%- endform -%}
+      </div>
+    {%- endif -%}
+  </div>
+</footer>
+
+{% stylesheet %}
+  .footer-gaming {
+    background: #000914;
+    color: #c0c0c0;
+    font-family: 'Montserrat', system-ui, sans-serif;
+    padding: 0;
+  }
+
+  /* === TOP ROW === */
+  .footer-gaming__top {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 64px 80px 32px;
+    display: grid;
+    grid-template-columns: minmax(280px, 340px) repeat(5, 1fr);
+    gap: 48px;
+    align-items: start;
+  }
+
+  .footer-gaming__brand {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .footer-gaming__logo img {
+    height: 48px;
+    width: auto;
+    display: block;
+  }
+
+  .footer-gaming__description {
+    color: #c0c0c0;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .footer-gaming__tagline {
+    color: #ff6b1a;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .footer-gaming__tagline p {
+    margin: 0;
+  }
+
+  .footer-gaming__social {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding-top: 6px;
+  }
+
+  .footer-gaming__social-link {
+    background: #01060f;
+    border: 1px solid #202d50;
+    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #c0c0c0;
+    transition: color 200ms ease, border-color 200ms ease, transform 200ms ease;
+  }
+
+  .footer-gaming__social-link svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .footer-gaming__social-link:hover {
+    color: #ff6b1a;
+    border-color: #ff6b1a;
+    transform: translateY(-2px);
+  }
+
+  .footer-gaming__col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    border-left: 1px solid #182737;
+    padding-left: 32px;
+  }
+
+  .footer-gaming__col-heading {
+    color: #ff6b1a;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin: 0 0 4px;
+  }
+
+  .footer-gaming__col-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .footer-gaming__col-link {
+    color: #c0c0c0;
+    font-size: 13px;
+    font-weight: 400;
+    text-decoration: none;
+    transition: color 150ms ease;
+  }
+
+  .footer-gaming__col-link:hover {
+    color: #ff6b1a;
+  }
+
+  /* === TRUST + NEWSLETTER ROW === */
+  .footer-gaming__trust-row {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 24px 80px 32px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    border-top: 1px solid #182737;
+  }
+
+  .footer-gaming__trust-card,
+  .footer-gaming__newsletter {
+    background: #01060f;
+    border-radius: 12px;
+    padding: 20px 22px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .footer-gaming__newsletter {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .footer-gaming__trust-icon {
+    background: rgba(255, 107, 26, 0.1);
+    border: 1px solid rgba(255, 107, 26, 0.25);
+    border-radius: 8px;
+    padding: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 200ms ease, background 200ms ease;
+  }
+
+  .footer-gaming__trust-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .footer-gaming__trust-card:hover .footer-gaming__trust-icon {
+    background: rgba(255, 107, 26, 0.2);
+    transform: scale(1.05);
+  }
+
+  .footer-gaming__trust-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+  }
+
+  .footer-gaming__trust-title {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .footer-gaming__trust-desc {
+    color: #c0c0c0;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .footer-gaming__trust-cta {
+    color: #ff6b1a;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    width: fit-content;
+    transition: gap 200ms ease;
+  }
+
+  .footer-gaming__trust-cta:hover {
+    gap: 10px;
+  }
+
+  /* === NEWSLETTER === */
+  .footer-gaming__newsletter-form {
+    margin: 0;
+  }
+
+  .footer-gaming__newsletter-row {
+    display: flex;
+    gap: 8px;
+    padding-top: 4px;
+  }
+
+  .footer-gaming__newsletter-input {
+    flex: 1;
+    background: #000914;
+    border: 1px solid #202d50;
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 12px;
+    line-height: 1.4;
+    transition: border-color 200ms ease;
+  }
+
+  .footer-gaming__newsletter-input::placeholder {
+    color: #818286;
+  }
+
+  .footer-gaming__newsletter-input:focus {
+    outline: none;
+    border-color: #ff6b1a;
+  }
+
+  .footer-gaming__newsletter-button {
+    background: #ff6b1a;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0 16px;
+    height: 35px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 200ms ease, transform 200ms ease;
+  }
+
+  .footer-gaming__newsletter-button:hover {
+    background: #ff7a30;
+    transform: translateY(-1px);
+  }
+
+  .footer-gaming__newsletter-button svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .footer-gaming__newsletter-success {
+    color: #34d399;
+    font-size: 12px;
+    margin: 0 0 8px;
+  }
+
+  .footer-gaming__newsletter-error {
+    color: #f87171;
+    font-size: 12px;
+    margin: 0 0 8px;
+  }
+
+  /* === BOTTOM === */
+  .footer-gaming__divider {
+    height: 1px;
+    background: #202d50;
+    max-width: calc(1440px - 160px);
+    margin: 0 auto;
+  }
+
+  .footer-gaming__bottom {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 18px 80px 38px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .footer-gaming__legal {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .footer-gaming__copyright {
+    color: #818286;
+    font-size: 12px;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .footer-gaming__divider-vertical {
+    width: 1px;
+    height: 16px;
+    background: #182737;
+  }
+
+  .footer-gaming__legal-links {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .footer-gaming__legal-links a {
+    color: #c0c0c0;
+    font-size: 12px;
+    text-decoration: none;
+    transition: color 150ms ease;
+  }
+
+  .footer-gaming__legal-links a:hover {
+    color: #ff6b1a;
+  }
+
+  .footer-gaming__language {
+    display: flex;
+    align-items: center;
+    color: #c0c0c0;
+  }
+
+  .footer-gaming__language-form {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+  }
+
+  .footer-gaming__language-form svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .footer-gaming__language-select {
+    background: transparent;
+    color: #c0c0c0;
+    font-family: inherit;
+    font-size: 12px;
+    border: none;
+    cursor: pointer;
+    padding: 4px 22px 4px 4px;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6' fill='%23c0c0c0'%3E%3Cpolyline points='1 1 5 5 9 1' stroke='%23c0c0c0' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 4px center;
+    background-size: 10px 6px;
+  }
+
+  .footer-gaming__language-select:focus {
+    outline: none;
+    color: #ff6b1a;
+  }
+
+  .visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 1100px) {
+    .footer-gaming__top {
+      grid-template-columns: 1fr 1fr 1fr;
+      padding: 48px 32px 24px;
+      gap: 32px;
+    }
+
+    .footer-gaming__brand {
+      grid-column: 1 / -1;
+    }
+
+    .footer-gaming__col {
+      border-left: none;
+      padding-left: 0;
+    }
+
+    .footer-gaming__trust-row {
+      grid-template-columns: 1fr 1fr;
+      padding: 24px 32px;
+    }
+
+    .footer-gaming__bottom {
+      padding: 18px 32px 32px;
+    }
+
+    .footer-gaming__divider {
+      margin: 0 32px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .footer-gaming__top {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .footer-gaming__trust-row {
+      grid-template-columns: 1fr;
+    }
+
+    .footer-gaming__bottom {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Footer Gaming",
+  "tag": "section",
+  "class": "section-footer-gaming",
+  "max_blocks": 16,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Brand column"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "textarea",
+      "id": "brand_description",
+      "label": "Description",
+      "default": "We capture human motion and transform it into intelligence that powers robotics, immersive training, and next-generation gaming."
+    },
+    {
+      "type": "richtext",
+      "id": "tagline",
+      "label": "Tagline (orange)",
+      "default": "<p>Human Intelligence.</p><p>Limitless Potential.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Social links"
+    },
+    {
+      "type": "url",
+      "id": "linkedin_url",
+      "label": "LinkedIn URL"
+    },
+    {
+      "type": "url",
+      "id": "twitter_url",
+      "label": "X / Twitter URL"
+    },
+    {
+      "type": "url",
+      "id": "youtube_url",
+      "label": "YouTube URL"
+    },
+    {
+      "type": "url",
+      "id": "instagram_url",
+      "label": "Instagram URL"
+    },
+    {
+      "type": "header",
+      "content": "Newsletter"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "label": "Heading",
+      "default": "Stay Updated"
+    },
+    {
+      "type": "textarea",
+      "id": "newsletter_body",
+      "label": "Body text",
+      "default": "Subscribe to get the latest insights, news, and updates from StretchSense."
+    },
+    {
+      "type": "text",
+      "id": "newsletter_placeholder",
+      "label": "Input placeholder",
+      "default": "Enter your email"
+    },
+    {
+      "type": "header",
+      "content": "Bottom row"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_locale_selector",
+      "label": "Show language selector",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "link_column",
+      "name": "Link column",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Column heading",
+          "default": "Column"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu (optional)",
+          "info": "Pick a Shopify navigation menu. Falls back to custom list below if empty."
+        },
+        {
+          "type": "textarea",
+          "id": "links_text",
+          "label": "Custom links",
+          "info": "One per line. Format: Label|url",
+          "default": "Overview|#\nTechnology|#"
+        }
+      ]
+    },
+    {
+      "type": "trust_card",
+      "name": "Trust card",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "default": "shield",
+          "options": [
+            { "value": "shield", "label": "Shield" },
+            { "value": "globe", "label": "Globe" },
+            { "value": "leaf", "label": "Leaf" },
+            { "value": "star", "label": "Star" }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Built with Trust"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Enterprise-grade security and privacy by design."
+        },
+        {
+          "type": "text",
+          "id": "cta_label",
+          "label": "CTA label",
+          "default": "Learn More"
+        },
+        {
+          "type": "url",
+          "id": "cta_link",
+          "label": "CTA link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Footer Gaming",
+      "blocks": [
+        {
+          "type": "link_column",
+          "settings": {
+            "heading": "PLATFORM",
+            "links_text": "Overview|#\nTechnology|#\nData Intelligence|#\nHardware|#\nAPI & Integrations|#\nSecurity|#"
+          }
+        },
+        {
+          "type": "link_column",
+          "settings": {
+            "heading": "SOLUTIONS",
+            "links_text": "StretchSense Robotics|#\nStretchSense XR Training|#\nStretchSense Gaming|#"
+          }
+        },
+        {
+          "type": "link_column",
+          "settings": {
+            "heading": "RESOURCES",
+            "links_text": "Whitepapers|#\nCase Studies|#\nWebinars|#\nBlog|#\nDatasets|#\nGuides|#\nEvents|#"
+          }
+        },
+        {
+          "type": "link_column",
+          "settings": {
+            "heading": "COMPANY",
+            "links_text": "About Us|#\nCareers|#\nInvestors|#\nContact Us|#"
+          }
+        },
+        {
+          "type": "link_column",
+          "settings": {
+            "heading": "SUPPORT",
+            "links_text": "Documentation|#\nHelp Center|#\nDownloads|#\nGet in Touch|#"
+          }
+        },
+        {
+          "type": "trust_card",
+          "settings": {
+            "icon": "shield",
+            "title": "Built with Trust",
+            "description": "Enterprise-grade security and privacy by design. Your data is protected at every layer.",
+            "cta_label": "Learn More"
+          }
+        },
+        {
+          "type": "trust_card",
+          "settings": {
+            "icon": "globe",
+            "title": "Global Presence",
+            "description": "Headquartered in Toronto, Canada with teams and partners around the world.",
+            "cta_label": "View Locations"
+          }
+        },
+        {
+          "type": "trust_card",
+          "settings": {
+            "icon": "leaf",
+            "title": "Sustainable Innovation",
+            "description": "We're committed to building technology that creates a smarter, safer, and more sustainable future.",
+            "cta_label": "Our Commitment"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
