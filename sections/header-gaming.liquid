@@ -2,11 +2,6 @@
   assign section_id = section.id
 -%}
 
-<script type="module" src="{{ 'cart-icon.js' | asset_url }}" fetchpriority="low"></script>
-{% if settings.cart_type == 'drawer' and template.name != 'cart' %}
-  <script src="{{ 'cart-drawer.js' | asset_url }}" type="module" fetchpriority="low"></script>
-{% endif %}
-
 <script>
   (() => {
     if (window.__headerGamingScrollInit) return;
@@ -100,106 +95,9 @@
         </a>
       {%- endif -%}
 
-      {%- capture cart_icon_markup -%}
-        <cart-icon class="header-gaming__cart-icon{% unless cart == empty %} header-gaming__cart-icon--has-cart{% endunless %}">
-          <span class="header-gaming__cart-svg" aria-hidden="true">
-            {{- 'icon-cart.svg' | inline_asset_content -}}
-          </span>
-          {%- render 'cart-bubble', limit: 100 -%}
-        </cart-icon>
-      {%- endcapture -%}
-
-      {%- if settings.cart_type == 'drawer' and template.name != 'cart' -%}
-        {%- capture empty_cart_drawer_content -%}
-          <div class="cart-drawer__header">
-            <button
-              ref="closeButton"
-              on:click="cart-drawer-component/close"
-              class="button close-button cart-drawer__close-button button-unstyled"
-              aria-label="{{ 'actions.close_dialog' | t }}"
-            >
-              <span class="svg-wrapper">
-                {{- 'icon-close.svg' | inline_asset_content -}}
-              </span>
-            </button>
-          </div>
-          <div class="cart-drawer__content" aria-label="{{ 'accessibility.cart' | t }}">
-            <h2 class="cart-drawer__heading h4 cart-drawer__heading--empty" id="cart-drawer-heading-empty">
-              {{ 'content.your_cart_is_empty' | t }}
-            </h2>
-            <div class="cart-drawer__items">
-              {%- render 'cart-products', force_empty: true -%}
-            </div>
-          </div>
-        {%- endcapture -%}
-
-        <cart-drawer-component
-          class="cart-drawer header-gaming__cart-drawer"
-          {% if settings.auto_open_cart_drawer %}auto-open{% endif %}
-        >
-          <template id="empty-cart-template">
-            {{ empty_cart_drawer_content }}
-          </template>
-          <button
-            class="header-gaming__cart-button button-unstyled"
-            on:click="/open"
-            aria-haspopup="dialog"
-            aria-label="{{ 'accessibility.cart' | t }}"
-            aria-describedby="cart-bubble-text"
-            data-testid="cart-drawer-trigger"
-          >
-            {{ cart_icon_markup }}
-          </button>
-
-          <dialog
-            ref="dialog"
-            class="cart-drawer__dialog dialog-modal dialog-drawer color-{{ settings.drawer_color_scheme }}{% if cart.empty? %} cart-drawer--empty{% endif %}"
-            data-testid="cart-drawer-dialog"
-            aria-labelledby="{% if cart.empty? %}cart-drawer-heading-empty{% else %}cart-drawer-heading{% endif %}"
-            scroll-lock
-            cart-summary-sticky="true"
-          >
-            <span ref="liveRegion" class="visually-hidden" role="status"></span>
-            <div class="cart-drawer__inner" data-hydration-key="cart-drawer-inner">
-              {%- capture cart_items_children -%}
-                {%- if cart.empty? -%}
-                  {{ empty_cart_drawer_content }}
-                {%- else -%}
-                  <div class="cart-drawer__header" id="cart-drawer-header">
-                    <h2 class="cart-drawer__heading h4" id="cart-drawer-heading">
-                      {{ 'content.cart_title' | t }}
-                      {%- render 'cart-bubble' -%}
-                    </h2>
-                    <button
-                      ref="closeButton"
-                      on:click="cart-drawer-component/close"
-                      class="button close-button cart-drawer__close-button button-unstyled"
-                      aria-label="{{ 'actions.close_dialog' | t }}"
-                    >
-                      <span class="svg-wrapper">
-                        {{- 'icon-close.svg' | inline_asset_content -}}
-                      </span>
-                    </button>
-                  </div>
-                  <scroll-hint class="cart-drawer__content" aria-label="{{ 'accessibility.cart' | t }}" style="--header-height: 60px;">
-                    <scroll-hint class="cart-drawer__items">
-                      {%- render 'cart-products' -%}
-                    </scroll-hint>
-                    <div class="cart-drawer__summary">
-                      {%- render 'cart-summary', section_id: section.id -%}
-                    </div>
-                  </scroll-hint>
-                {%- endif -%}
-              {%- endcapture -%}
-              {%- render 'cart-items-component', children: cart_items_children, is_drawer: true, section_id: section.id -%}
-            </div>
-          </dialog>
-        </cart-drawer-component>
-      {%- else -%}
-        <a href="{{ routes.cart_url }}" class="header-gaming__cart-button" aria-label="{{ 'accessibility.cart' | t }}">
-          {{ cart_icon_markup }}
-        </a>
-      {%- endif -%}
+      <div class="header-gaming__actions">
+        {%- render 'header-actions', section: section, display_style: 'icon' -%}
+      </div>
     </nav>
   </div>
 </header>
@@ -307,11 +205,31 @@
     background: rgba(255, 107, 26, 0.15);
   }
 
-  .header-gaming__cart-button {
-    background: none;
+  /* === Theme header-actions snippet adapted to our dark theme === */
+  .header-gaming__actions {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .header-gaming__actions header-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    color: #fff;
+  }
+
+  /* Hide the account button — not in Figma design */
+  .header-gaming__actions .account-button,
+  .header-gaming__actions shopify-account {
+    display: none !important;
+  }
+
+  /* Cart icon trigger button */
+  .header-gaming__actions [data-testid='cart-drawer-trigger'],
+  .header-gaming__actions .action__cart {
+    background: transparent;
     border: none;
     padding: 4px;
-    margin-left: 4px;
     cursor: pointer;
     color: #fff;
     display: inline-flex;
@@ -321,11 +239,12 @@
     transition: color 150ms ease;
   }
 
-  .header-gaming__cart-button:hover {
+  .header-gaming__actions [data-testid='cart-drawer-trigger']:hover,
+  .header-gaming__actions .action__cart:hover {
     color: #ff6b1a;
   }
 
-  .header-gaming__cart-icon {
+  .header-gaming__actions .header-actions__cart-icon {
     position: relative;
     display: inline-flex;
     align-items: center;
@@ -336,20 +255,22 @@
     --icon-stroke-width: 1.5;
   }
 
-  .header-gaming__cart-svg {
-    display: inline-flex;
-    width: 24px;
-    height: 24px;
-  }
-
-  .header-gaming__cart-svg svg {
+  .header-gaming__actions .header-actions__cart-icon svg {
     width: 24px;
     height: 24px;
     display: block;
+    /* clear the donut mask the theme applies for default header */
+    mask: none !important;
+    -webkit-mask: none !important;
   }
 
-  /* Override theme cart-bubble defaults inside our header */
-  .header-gaming__cart-icon .cart-bubble {
+  /* The "Cart" text label — hide, we want icon-only */
+  .header-gaming__actions .header-actions__cart-icon > span:not(.svg-wrapper):not(.cart-bubble) {
+    display: none;
+  }
+
+  /* Cart bubble — orange pill in top-right corner */
+  .header-gaming__actions .cart-bubble {
     position: absolute;
     top: -6px;
     right: -8px;
@@ -362,17 +283,17 @@
     background: transparent;
   }
 
-  .header-gaming__cart-icon .cart-bubble.visually-hidden {
+  .header-gaming__actions .cart-bubble.visually-hidden {
     display: none;
   }
 
-  .header-gaming__cart-icon .cart-bubble__background {
+  .header-gaming__actions .cart-bubble__background {
     background: #ff6b1a;
     border-radius: 999px;
     inset: 0;
   }
 
-  .header-gaming__cart-icon .cart-bubble__text {
+  .header-gaming__actions .cart-bubble__text {
     position: relative;
     color: #fff;
     font-size: 10px;
@@ -381,7 +302,7 @@
     z-index: 1;
   }
 
-  .header-gaming__cart-icon .cart-bubble__text-count {
+  .header-gaming__actions .cart-bubble__text-count {
     color: #fff;
     font-family: 'Montserrat', system-ui, sans-serif;
     font-weight: 700;
