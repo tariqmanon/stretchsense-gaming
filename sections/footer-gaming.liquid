@@ -1,5 +1,7 @@
 {%- liquid
   assign section_id = section.id
+  assign newsletter_form_id = 'NewsletterForm-' | append: section.id
+  assign locale_form_id = 'FooterLocaleForm-' | append: section.id
 -%}
 
 <footer class="footer-gaming" id="footer-gaming-{{ section_id }}" role="contentinfo">
@@ -128,7 +130,7 @@
       <p class="footer-gaming__trust-title">{{ section.settings.newsletter_heading }}</p>
       <p class="footer-gaming__trust-desc">{{ section.settings.newsletter_body }}</p>
 
-      {%- form 'customer', class: 'footer-gaming__newsletter-form', id: 'NewsletterForm-' | append: section.id -%}
+      {%- form 'customer', id: newsletter_form_id, class: 'footer-gaming__newsletter-form' -%}
         <input type="hidden" name="contact[tags]" value="newsletter">
         {%- if form.posted_successfully? -%}
           <p class="footer-gaming__newsletter-success" role="status">{{ 'general.newsletter.confirmation' | t | default: 'Thanks for subscribing!' }}</p>
@@ -181,7 +183,7 @@
 
     {%- if section.settings.show_locale_selector and localization.available_languages.size > 1 -%}
       <div class="footer-gaming__language">
-        {%- form 'localization', id: 'FooterLocaleForm-' | append: section.id, class: 'footer-gaming__language-form' -%}
+        {%- form 'localization', id: locale_form_id, class: 'footer-gaming__language-form' -%}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="10"/>
             <line x1="2" y1="12" x2="22" y2="12"/>
