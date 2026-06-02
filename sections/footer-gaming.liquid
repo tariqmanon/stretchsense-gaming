@@ -133,7 +133,7 @@
       {%- form 'customer', id: newsletter_form_id, class: 'footer-gaming__newsletter-form' -%}
         <input type="hidden" name="contact[tags]" value="newsletter">
         {%- if form.posted_successfully? -%}
-          <p class="footer-gaming__newsletter-success" role="status">{{ 'general.newsletter.confirmation' | t | default: 'Thanks for subscribing!' }}</p>
+          <p class="footer-gaming__newsletter-success" role="status">{{ 'blocks.email_signup.success' | t }}</p>
         {%- elsif form.errors -%}
           <p class="footer-gaming__newsletter-error" role="alert">{{ form.errors.translated_fields.email }} {{ form.errors.messages.email }}</p>
         {%- endif -%}
