@@ -46,7 +46,21 @@
   data-section-id="{{ section_id }}"
 >
   <div class="header-gaming__inner">
-    <a href="{{ routes.root_url }}" class="header-gaming__logo" aria-label="{{ shop.name }}">
+    {%- liquid
+      assign logo_href = section.settings.logo_link | default: routes.root_url
+      assign logo_target = ''
+      if logo_href contains '://' and logo_href contains 'myshopify' == false
+        unless logo_href contains shop.permanent_domain or logo_href contains shop.secure_url
+          assign logo_target = 'external'
+        endunless
+      endif
+    -%}
+    <a
+      href="{{ logo_href }}"
+      class="header-gaming__logo"
+      aria-label="{{ shop.name }}"
+      {% if logo_target == 'external' %}target="_blank" rel="noopener"{% endif %}
+    >
       {%- if section.settings.logo != blank -%}
         <img
           src="{{ section.settings.logo | image_url: width: 320 }}"
@@ -339,6 +353,12 @@
       "id": "logo",
       "label": "Logo",
       "info": "White logo on dark header. Falls back to bundled default."
+    },
+    {
+      "type": "url",
+      "id": "logo_link",
+      "label": "Logo link",
+      "info": "Where the logo navigates when clicked. Leave empty for store home. External URLs open in a new tab."
     },
     {
       "type": "header",
