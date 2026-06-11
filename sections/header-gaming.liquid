@@ -49,9 +49,11 @@
     {%- liquid
       assign logo_href = section.settings.logo_link | default: routes.root_url
       assign logo_target = ''
-      if logo_href contains '://' and logo_href contains 'myshopify' == false
-        unless logo_href contains shop.permanent_domain or logo_href contains shop.secure_url
-          assign logo_target = 'external'
+      if logo_href contains '://'
+        unless logo_href contains 'myshopify'
+          unless logo_href contains shop.permanent_domain
+            assign logo_target = 'external'
+          endunless
         endunless
       endif
     -%}

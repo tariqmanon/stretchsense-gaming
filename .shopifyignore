@@ -1,4 +1,12 @@
 # Files managed by Shopify admin (theme editor) — never overwrite from push.
-# Pull these from Shopify with `shopify theme pull --only "templates/*.json" --only "config/settings_data.json"` if you need a fresh copy locally.
+# Pull these from Shopify with `shopify theme pull --only "<pattern>"` if you need a fresh copy locally.
+
+# Page templates (homepage, product, collection, blog, etc.)
 templates/*.json
+templates/customers/*.json
+
+# Theme settings (colors, fonts, schemes, all theme-wide config)
 config/settings_data.json
+
+# Section groups (header + footer block ordering, announcement bar, etc.)
+sections/*-group.json

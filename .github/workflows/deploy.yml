@@ -26,6 +26,8 @@ jobs:
           SHOPIFY_FLAG_STORE: ${{ secrets.SHOPIFY_FLAG_STORE }}
           SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
         run: |
-          shopify theme push --theme 139956158551 --allow-live --nodelete \
+          shopify theme push --theme 157644521671 --allow-live --nodelete \
             --ignore="templates/*.json" \
-            --ignore="config/settings_data.json"
+            --ignore="templates/customers/*.json" \
+            --ignore="config/settings_data.json" \
+            --ignore="sections/*-group.json"
