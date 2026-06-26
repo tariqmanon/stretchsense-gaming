@@ -1,0 +1,526 @@
+{% comment %}
+  Downloads page — gated by customer login.
+  Customers see SDK files, tutorial videos, and docs only for products
+  they have purchased. Content is read from product metafields:
+
+    - custom.sdk_download        (file)
+    - custom.tutorial_video      (URL or file)
+    - custom.user_manual         (file)
+    - custom.setup_guide         (rich text)
+    - custom.system_requirements (rich text)
+
+  Page is created via admin (Online Store → Pages → Add page,
+  handle: "downloads", template: "page.downloads").
+{% endcomment %}
+
+<section class="downloads-gaming">
+  <div class="downloads-gaming__inner">
+    {%- if customer == blank -%}
+      {%- comment -%} Not logged in — show login prompt with return URL {%- endcomment -%}
+      <div class="downloads-gaming__gate">
+        <h1 class="downloads-gaming__title">Your Downloads</h1>
+        <p class="downloads-gaming__lede">
+          Log in with the email used at checkout to access your StretchSense SDK,
+          tutorial videos, and product documentation.
+        </p>
+        <a
+          href="{{ routes.account_login_url }}?return_url=/pages/downloads"
+          class="downloads-gaming__cta"
+        >
+          Log in to access downloads
+        </a>
+        <p class="downloads-gaming__note">
+          No password needed — we'll email you a one-time login link.
+        </p>
+      </div>
+    {%- else -%}
+      {%- comment -%}
+        Logged in — collect unique purchased product handles
+        from customer's order history.
+      {%- endcomment -%}
+      {%- assign purchased_handles = '' -%}
+      {%- for order in customer.orders -%}
+        {%- for line in order.line_items -%}
+          {%- if line.product != blank -%}
+            {%- assign purchased_handles = purchased_handles | append: ',' | append: line.product.handle -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endfor -%}
+
+      {%- assign handle_list = purchased_handles | split: ',' | uniq -%}
+      {%- assign downloadable_count = 0 -%}
+
+      <header class="downloads-gaming__header">
+        <h1 class="downloads-gaming__title">Your Downloads</h1>
+        <p class="downloads-gaming__lede">
+          Welcome back, {{ customer.first_name | default: 'gamer' }}. Below are the
+          software, tutorials, and documentation for products you've purchased.
+        </p>
+      </header>
+
+      <div class="downloads-gaming__grid">
+        {%- for handle in handle_list -%}
+          {%- assign p = all_products[handle] -%}
+          {%- if p == empty -%}{%- continue -%}{%- endif -%}
+
+          {%- assign has_sdk = false -%}
+          {%- assign has_video = false -%}
+          {%- assign has_manual = false -%}
+          {%- assign has_setup = false -%}
+          {%- assign has_reqs = false -%}
+
+          {%- if p.metafields.custom.sdk_download != blank -%}{%- assign has_sdk = true -%}{%- endif -%}
+          {%- if p.metafields.custom.tutorial_video != blank -%}{%- assign has_video = true -%}{%- endif -%}
+          {%- if p.metafields.custom.user_manual != blank -%}{%- assign has_manual = true -%}{%- endif -%}
+          {%- if p.metafields.custom.setup_guide != blank -%}{%- assign has_setup = true -%}{%- endif -%}
+          {%- if p.metafields.custom.system_requirements != blank -%}{%- assign has_reqs = true -%}{%- endif -%}
+
+          {%- comment -%} Skip products with no downloadable content {%- endcomment -%}
+          {%- unless has_sdk or has_video or has_manual or has_setup or has_reqs -%}
+            {%- continue -%}
+          {%- endunless -%}
+
+          {%- assign downloadable_count = downloadable_count | plus: 1 -%}
+
+          <article class="downloads-card">
+            <div class="downloads-card__head">
+              {%- if p.featured_image -%}
+                <img
+                  src="{{ p.featured_image | image_url: width: 200 }}"
+                  alt="{{ p.title | escape }}"
+                  class="downloads-card__image"
+                  width="100"
+                  height="100"
+                  loading="lazy"
+                >
+              {%- endif -%}
+              <div class="downloads-card__meta">
+                <h2 class="downloads-card__title">{{ p.title }}</h2>
+                <a href="{{ p.url }}" class="downloads-card__link">View product →</a>
+              </div>
+            </div>
+
+            {%- if has_video -%}
+              <div class="downloads-card__video">
+                {%- assign video_value = p.metafields.custom.tutorial_video -%}
+                {%- assign video_url = video_value | escape -%}
+                {%- if video_url contains 'youtube.com' or video_url contains 'youtu.be' -%}
+                  {%- assign yt_id = '' -%}
+                  {%- if video_url contains 'youtu.be/' -%}
+                    {%- assign yt_id = video_url | split: 'youtu.be/' | last | split: '?' | first -%}
+                  {%- elsif video_url contains 'watch?v=' -%}
+                    {%- assign yt_id = video_url | split: 'watch?v=' | last | split: '&' | first -%}
+                  {%- endif -%}
+                  {%- if yt_id != '' -%}
+                    <iframe
+                      src="https://www.youtube.com/embed/{{ yt_id }}"
+                      title="{{ p.title | escape }} tutorial"
+                      frameborder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowfullscreen
+                      loading="lazy"
+                    ></iframe>
+                  {%- endif -%}
+                {%- elsif video_url contains 'vimeo.com' -%}
+                  {%- assign vm_id = video_url | split: 'vimeo.com/' | last | split: '?' | first -%}
+                  <iframe
+                    src="https://player.vimeo.com/video/{{ vm_id }}"
+                    title="{{ p.title | escape }} tutorial"
+                    frameborder="0"
+                    allow="autoplay; fullscreen; picture-in-picture"
+                    allowfullscreen
+                    loading="lazy"
+                  ></iframe>
+                {%- else -%}
+                  <video controls preload="metadata">
+                    <source src="{{ video_url }}">
+                    Your browser does not support the video tag.
+                  </video>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+
+            <div class="downloads-card__actions">
+              {%- if has_sdk -%}
+                {%- assign sdk_file = p.metafields.custom.sdk_download -%}
+                <a
+                  href="{{ sdk_file }}"
+                  class="downloads-card__btn downloads-card__btn--primary"
+                  download
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  Download SDK
+                </a>
+              {%- endif -%}
+
+              {%- if has_manual -%}
+                {%- assign manual_file = p.metafields.custom.user_manual -%}
+                <a
+                  href="{{ manual_file }}"
+                  class="downloads-card__btn"
+                  download
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                  User manual (PDF)
+                </a>
+              {%- endif -%}
+            </div>
+
+            {%- if has_setup -%}
+              <details class="downloads-card__details" open>
+                <summary>Setup guide</summary>
+                <div class="downloads-card__rte rte">
+                  {{ p.metafields.custom.setup_guide }}
+                </div>
+              </details>
+            {%- endif -%}
+
+            {%- if has_reqs -%}
+              <details class="downloads-card__details">
+                <summary>System requirements</summary>
+                <div class="downloads-card__rte rte">
+                  {{ p.metafields.custom.system_requirements }}
+                </div>
+              </details>
+            {%- endif -%}
+          </article>
+        {%- endfor -%}
+      </div>
+
+      {%- if downloadable_count == 0 -%}
+        <div class="downloads-gaming__empty">
+          <h2>No downloads available yet</h2>
+          <p>
+            We couldn't find any downloadable content tied to your purchases yet.
+            If you've recently placed an order, please allow a few minutes for
+            processing — or <a href="{{ routes.account_url }}">view your orders</a>.
+          </p>
+          <p class="downloads-gaming__note">
+            Need help? <a href="/pages/contact">Contact support</a>.
+          </p>
+        </div>
+      {%- endif -%}
+
+      <p class="downloads-gaming__signout">
+        Signed in as <strong>{{ customer.email }}</strong> ·
+        <a href="{{ routes.account_logout_url }}">Sign out</a>
+      </p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .downloads-gaming {
+    background: #0a0a0a;
+    color: #fff;
+    font-family: 'Montserrat', system-ui, sans-serif;
+    min-height: 70vh;
+    padding: 80px 24px 120px;
+  }
+
+  .downloads-gaming__inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .downloads-gaming__title {
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 12px;
+  }
+
+  .downloads-gaming__lede {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 640px;
+    margin: 0 0 32px;
+  }
+
+  /* Login gate */
+  .downloads-gaming__gate {
+    text-align: center;
+    max-width: 480px;
+    margin: 80px auto;
+  }
+
+  .downloads-gaming__gate .downloads-gaming__lede {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .downloads-gaming__cta {
+    display: inline-block;
+    background: #ff6b1a;
+    color: #fff;
+    padding: 14px 28px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    margin-top: 16px;
+    transition: background 150ms ease, transform 150ms ease;
+  }
+
+  .downloads-gaming__cta:hover {
+    background: #ff8540;
+    transform: translateY(-1px);
+  }
+
+  .downloads-gaming__note {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 13px;
+    margin-top: 16px;
+  }
+
+  /* Header for logged-in view */
+  .downloads-gaming__header {
+    margin-bottom: 48px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* Cards grid */
+  .downloads-gaming__grid {
+    display: grid;
+    gap: 24px;
+  }
+
+  .downloads-card {
+    background: linear-gradient(180deg, rgba(255, 107, 26, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 28px;
+    transition: border-color 150ms ease;
+  }
+
+  .downloads-card:hover {
+    border-color: rgba(255, 107, 26, 0.3);
+  }
+
+  .downloads-card__head {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .downloads-card__image {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .downloads-card__meta {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .downloads-card__title {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    line-height: 1.2;
+  }
+
+  .downloads-card__link {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 13px;
+    text-decoration: none;
+    transition: color 150ms ease;
+  }
+
+  .downloads-card__link:hover {
+    color: #ff6b1a;
+  }
+
+  /* Video */
+  .downloads-card__video {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000;
+    margin-bottom: 20px;
+  }
+
+  .downloads-card__video iframe,
+  .downloads-card__video video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  /* Buttons */
+  .downloads-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .downloads-card__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 18px;
+    background: transparent;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 150ms ease, border-color 150ms ease;
+  }
+
+  .downloads-card__btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .downloads-card__btn--primary {
+    background: #ff6b1a;
+    border-color: #ff6b1a;
+  }
+
+  .downloads-card__btn--primary:hover {
+    background: #ff8540;
+    border-color: #ff8540;
+  }
+
+  /* Details accordions */
+  .downloads-card__details {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 16px 0 0;
+    margin-top: 16px;
+  }
+
+  .downloads-card__details summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 4px 0;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #fff;
+  }
+
+  .downloads-card__details summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .downloads-card__details summary::after {
+    content: '+';
+    font-size: 20px;
+    color: #ff6b1a;
+    transition: transform 150ms ease;
+  }
+
+  .downloads-card__details[open] summary::after {
+    content: '−';
+  }
+
+  .downloads-card__rte {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-top: 12px;
+  }
+
+  .downloads-card__rte a {
+    color: #ff6b1a;
+  }
+
+  .downloads-card__rte p {
+    margin: 0 0 8px;
+  }
+
+  /* Empty state */
+  .downloads-gaming__empty {
+    text-align: center;
+    padding: 60px 20px;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .downloads-gaming__empty h2 {
+    font-size: 22px;
+    margin: 0 0 12px;
+  }
+
+  .downloads-gaming__empty p {
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 1.6;
+    max-width: 520px;
+    margin: 0 auto 12px;
+  }
+
+  .downloads-gaming__empty a {
+    color: #ff6b1a;
+  }
+
+  /* Sign-out footer */
+  .downloads-gaming__signout {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 13px;
+    text-align: center;
+  }
+
+  .downloads-gaming__signout a {
+    color: #ff6b1a;
+    text-decoration: none;
+  }
+
+  /* Mobile */
+  @media (max-width: 640px) {
+    .downloads-gaming {
+      padding: 56px 16px 80px;
+    }
+
+    .downloads-card {
+      padding: 20px;
+    }
+
+    .downloads-card__head {
+      gap: 12px;
+    }
+
+    .downloads-card__image {
+      width: 56px;
+      height: 56px;
+    }
+
+    .downloads-card__title {
+      font-size: 18px;
+    }
+
+    .downloads-card__actions {
+      flex-direction: column;
+    }
+
+    .downloads-card__btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+{% endstylesheet %}
