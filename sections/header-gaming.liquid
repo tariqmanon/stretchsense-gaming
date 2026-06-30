@@ -234,10 +234,40 @@
     color: #fff;
   }
 
-  /* Hide the account button — not in Figma design */
+  /* Account button — styled to match gaming theme */
   .header-gaming__actions .account-button,
-  .header-gaming__actions shopify-account {
-    display: none !important;
+  .header-gaming__actions shopify-account,
+  .header-gaming__actions .header-actions__account-link {
+    background: transparent;
+    border: none;
+    padding: 4px;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: color 150ms ease;
+    cursor: pointer;
+  }
+
+  .header-gaming__actions .account-button:hover,
+  .header-gaming__actions shopify-account:hover,
+  .header-gaming__actions .header-actions__account-link:hover {
+    color: #ff6b1a;
+  }
+
+  .header-gaming__actions .account-button svg,
+  .header-gaming__actions shopify-account svg,
+  .header-gaming__actions .header-actions__account-link svg {
+    width: 22px;
+    height: 22px;
+    color: inherit;
+  }
+
+  /* Hide any "Account" / "Log in" text label — icon-only */
+  .header-gaming__actions .account-button > span:not(.svg-wrapper),
+  .header-gaming__actions shopify-account > span:not(.svg-wrapper) {
+    display: none;
   }
 
   /* Cart icon trigger button */
