@@ -53,14 +53,20 @@
   }
 
   .guarantee-bar__inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 24px 64px;
+    max-width: none;
+    margin: 0;
+    padding: 24px 80px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 24px;
     flex-wrap: wrap;
+  }
+
+  @media (max-width: 1100px) {
+    .guarantee-bar__inner {
+      padding: 24px 32px;
+    }
   }
 
   .guarantee-bar__item {

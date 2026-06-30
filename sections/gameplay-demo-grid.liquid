@@ -69,13 +69,19 @@
   }
 
   .gameplay-grid__inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 28px 64px 36px;
+    max-width: none;
+    margin: 0;
+    padding: 28px 80px 36px;
     display: flex;
     flex-direction: column;
     gap: 28px;
     align-items: center;
+  }
+
+  @media (max-width: 1100px) {
+    .gameplay-grid__inner {
+      padding: 28px 32px 36px;
+    }
   }
 
   .gameplay-grid__heading {
