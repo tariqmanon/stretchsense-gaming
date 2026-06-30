@@ -26,9 +26,19 @@
         <a
           href="{{ routes.account_login_url }}?return_url=/pages/downloads"
           class="downloads-gaming__cta"
+          data-downloads-login-link
         >
           Log in to access downloads
         </a>
+        <script>
+          (function () {
+            var link = document.querySelector('[data-downloads-login-link]');
+            if (!link) return;
+            link.addEventListener('click', function () {
+              try { sessionStorage.setItem('returnToDownloads', '1'); } catch (e) {}
+            });
+          })();
+        </script>
         <p class="downloads-gaming__note">
           No password needed — we'll email you a one-time login link.
         </p>

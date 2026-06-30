@@ -141,5 +141,19 @@
     {% endif %}
 
     {% render 'scroll-to-top' %}
+
+    <script>
+      (function () {
+        try {
+          if (sessionStorage.getItem('returnToDownloads') === '1') {
+            var path = window.location.pathname.replace(/\/+$/, '');
+            if (path === '/account' || path.indexOf('/account/orders') === 0 || path === '/account/profile') {
+              sessionStorage.removeItem('returnToDownloads');
+              window.location.replace('/pages/downloads');
+            }
+          }
+        } catch (e) {}
+      })();
+    </script>
   </body>
 </html>
