@@ -235,9 +235,7 @@
   }
 
   /* Account button — styled to match gaming theme */
-  .header-gaming__actions .account-button,
-  .header-gaming__actions shopify-account,
-  .header-gaming__actions .header-actions__account-link {
+  .header-gaming__actions .account-button {
     background: transparent;
     border: none;
     padding: 4px;
@@ -248,26 +246,32 @@
     text-decoration: none;
     transition: color 150ms ease;
     cursor: pointer;
+    --icon-stroke-width: 1.5;
   }
 
-  .header-gaming__actions .account-button:hover,
-  .header-gaming__actions shopify-account:hover,
-  .header-gaming__actions .header-actions__account-link:hover {
+  .header-gaming__actions .account-button:hover {
     color: #ff6b1a;
   }
 
-  .header-gaming__actions .account-button svg,
-  .header-gaming__actions shopify-account svg,
-  .header-gaming__actions .header-actions__account-link svg {
+  .header-gaming__actions .account-button shopify-account {
+    color: inherit;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .header-gaming__actions .account-button__icon {
     width: 22px;
     height: 22px;
     color: inherit;
+    stroke: currentColor;
   }
 
-  /* Hide any "Account" / "Log in" text label — icon-only */
-  .header-gaming__actions .account-button > span:not(.svg-wrapper),
-  .header-gaming__actions shopify-account > span:not(.svg-wrapper) {
-    display: none;
+  /* Force the signed-out avatar SVG to show */
+  .header-gaming__actions .account-button [slot='signed-out-avatar'] {
+    display: inline-flex;
+    align-items: center;
+    color: inherit;
   }
 
   /* Cart icon trigger button */
