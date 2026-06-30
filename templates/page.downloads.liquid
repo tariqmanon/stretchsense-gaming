@@ -1,76 +1,124 @@
 {% comment %}
-  Downloads page — public.
-  Lists every active product that has a "custom.sdk_download_url" metafield set.
-  Add a new product to the page by setting its SDK URL metafield in admin —
-  no code change needed.
+  Downloads page — secure, login-gated, purchase-filtered.
+
+  Access rules (NON-NEGOTIABLE):
+    1. Customer MUST be logged in. Anonymous visitors see only a login screen.
+    2. Customer MUST have purchased the product. Page reads customer.orders and
+       only renders SDK cards for products they actually bought.
+    3. SDK URLs (custom.sdk_download_url) are never rendered in HTML to anyone
+       who fails the login + purchase checks.
+
+  Adding a new product: set its custom.sdk_download_url metafield in admin —
+  buyers of that product will see their card automatically. No code change.
 {% endcomment %}
 
 <section class="downloads-gaming">
   <div class="downloads-gaming__inner">
-    <header class="downloads-gaming__header">
-      <h1 class="downloads-gaming__title">XR Game App Downloads</h1>
-      <p class="downloads-gaming__lede">
-        Download the latest StretchSense software for your glove. Use the
-        download that matches the product you purchased.
-      </p>
-    </header>
 
-    {%- assign sdk_count = 0 -%}
-    <div class="downloads-gaming__grid">
-      {%- for product in collections.all.products -%}
-        {%- assign sdk_url = product.metafields.custom.sdk_download_url -%}
-        {%- if sdk_url == blank -%}{%- continue -%}{%- endif -%}
-        {%- assign sdk_count = sdk_count | plus: 1 -%}
-
-        <article class="downloads-card">
-          {%- if product.featured_image -%}
-            <img
-              src="{{ product.featured_image | image_url: width: 240 }}"
-              alt="{{ product.title | escape }}"
-              class="downloads-card__image"
-              width="120"
-              height="120"
-              loading="lazy"
-            >
-          {%- endif -%}
-
-          <div class="downloads-card__body">
-            <h2 class="downloads-card__title">{{ product.title }}</h2>
-            {%- if product.metafields.custom.sdk_version != blank -%}
-              <p class="downloads-card__version">Version {{ product.metafields.custom.sdk_version }}</p>
-            {%- endif -%}
-            <p class="downloads-card__lede">
-              SDK installer for {{ product.title }} customers.
-            </p>
-
-            <a
-              href="{{ sdk_url }}"
-              class="downloads-card__btn"
-              download
-              rel="noopener"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="7 10 12 15 17 10"/>
-                <line x1="12" y1="15" x2="12" y2="3"/>
-              </svg>
-              Download SDK
-            </a>
-          </div>
-        </article>
-      {%- endfor -%}
-    </div>
-
-    {%- if sdk_count == 0 -%}
-      <div class="downloads-gaming__empty">
-        <h2>No downloads available yet</h2>
-        <p>SDKs will appear here once they're attached to products.</p>
+    {%- if customer == blank -%}
+      {%- comment -%} === Login gate — no product info or URLs rendered === {%- endcomment -%}
+      <div class="downloads-gaming__gate">
+        <h1 class="downloads-gaming__title">Your Downloads</h1>
+        <p class="downloads-gaming__lede">
+          Sign in with the email used at checkout to access your StretchSense SDK
+          and software downloads.
+        </p>
+        <a
+          href="{{ routes.account_login_url }}?return_url=/pages/downloads"
+          class="downloads-gaming__cta"
+        >
+          Log in to access downloads
+        </a>
+        <p class="downloads-gaming__note">
+          No password needed — we'll email you a one-time login link.
+        </p>
       </div>
-    {%- endif -%}
 
-    <p class="downloads-gaming__support">
-      Need help? <a href="/pages/contact">Contact support</a> or join our community on Discord.
-    </p>
+    {%- else -%}
+      {%- comment -%} === Logged in — collect unique purchased product handles === {%- endcomment -%}
+      {%- assign purchased_handles = '' -%}
+      {%- for order in customer.orders -%}
+        {%- for line in order.line_items -%}
+          {%- if line.product != blank -%}
+            {%- assign purchased_handles = purchased_handles | append: ',' | append: line.product.handle -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endfor -%}
+
+      {%- assign handle_list = purchased_handles | split: ',' | uniq -%}
+      {%- assign sdk_count = 0 -%}
+
+      <header class="downloads-gaming__header">
+        <h1 class="downloads-gaming__title">Your Downloads</h1>
+        <p class="downloads-gaming__lede">
+          Welcome back, {{ customer.first_name | default: 'gamer' }}. Below are the
+          software downloads for products you've purchased.
+        </p>
+      </header>
+
+      <div class="downloads-gaming__grid">
+        {%- for handle in handle_list -%}
+          {%- if handle == '' -%}{%- continue -%}{%- endif -%}
+          {%- assign p = all_products[handle] -%}
+          {%- assign sdk_url = p.metafields.custom.sdk_download_url -%}
+          {%- if sdk_url == blank -%}{%- continue -%}{%- endif -%}
+          {%- assign sdk_count = sdk_count | plus: 1 -%}
+
+          <article class="downloads-card">
+            {%- if p.featured_image -%}
+              <img
+                src="{{ p.featured_image | image_url: width: 240 }}"
+                alt="{{ p.title | escape }}"
+                class="downloads-card__image"
+                width="120"
+                height="120"
+                loading="lazy"
+              >
+            {%- endif -%}
+
+            <div class="downloads-card__body">
+              <h2 class="downloads-card__title">{{ p.title }}</h2>
+              {%- if p.metafields.custom.sdk_version != blank -%}
+                <p class="downloads-card__version">Version {{ p.metafields.custom.sdk_version }}</p>
+              {%- endif -%}
+              <p class="downloads-card__lede">
+                SDK installer for your {{ p.title }} purchase.
+              </p>
+
+              <a
+                href="{{ sdk_url }}"
+                class="downloads-card__btn"
+                download
+                rel="noopener"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Download SDK
+              </a>
+            </div>
+          </article>
+        {%- endfor -%}
+      </div>
+
+      {%- if sdk_count == 0 -%}
+        <div class="downloads-gaming__empty">
+          <h2>No downloads yet</h2>
+          <p>
+            We couldn't find any downloadable software tied to your purchases.
+            If you've recently placed an order, please allow a few minutes for
+            processing, or <a href="{{ routes.account_url }}">view your orders</a>.
+          </p>
+        </div>
+      {%- endif -%}
+
+      <p class="downloads-gaming__signout">
+        Signed in as <strong>{{ customer.email }}</strong> &middot;
+        <a href="{{ routes.account_logout_url }}">Sign out</a>
+      </p>
+    {%- endif -%}
   </div>
 </section>
 
@@ -209,7 +257,7 @@
     margin: 0;
   }
 
-  .downloads-gaming__support {
+  .downloads-gaming__signout {
     margin-top: 48px;
     padding-top: 24px;
     border-top: 1px solid rgba(255, 255, 255, 0.06);
@@ -218,9 +266,48 @@
     text-align: center;
   }
 
-  .downloads-gaming__support a {
+  .downloads-gaming__signout a {
     color: #ff6b1a;
     text-decoration: none;
+  }
+
+  /* === Login gate === */
+  .downloads-gaming__gate {
+    text-align: center;
+    max-width: 480px;
+    margin: 80px auto;
+  }
+
+  .downloads-gaming__gate .downloads-gaming__lede {
+    margin: 0 auto 24px;
+  }
+
+  .downloads-gaming__cta {
+    display: inline-block;
+    background: #ff6b1a;
+    color: #fff;
+    padding: 14px 28px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    margin-top: 8px;
+    transition: background 150ms ease, transform 150ms ease;
+  }
+
+  .downloads-gaming__cta:hover {
+    background: #ff8540;
+    transform: translateY(-1px);
+  }
+
+  .downloads-gaming__note {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 13px;
+    margin-top: 16px;
+  }
+
+  .downloads-gaming__empty a {
+    color: #ff6b1a;
   }
 
   @media (max-width: 640px) {
