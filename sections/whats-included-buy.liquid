@@ -1,0 +1,689 @@
+{%- liquid
+  assign section_id = section.id
+  assign p = all_products[section.settings.product]
+  assign current_variant = p.selected_or_first_available_variant
+-%}
+
+<section
+  id="whats-included-buy-{{ section_id }}"
+  class="wib"
+  data-section-id="{{ section_id }}"
+>
+  <div class="wib__inner">
+
+    {# LEFT COLUMN — What's Included #}
+    <div class="wib__col wib__col--included" data-reveal>
+      {%- if section.settings.included_heading != blank -%}
+        <h2 class="wib__heading">{{ section.settings.included_heading }}</h2>
+      {%- endif -%}
+
+      <div class="wib__included-grid">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'inclusion' -%}
+            <div class="wib__inclusion" {{ block.shopify_attributes }}>
+              <div class="wib__inclusion-media" aria-hidden="true">
+                {%- if block.settings.image != blank -%}
+                  <img
+                    src="{{ block.settings.image | image_url: width: 320 }}"
+                    alt="{{ block.settings.label | escape }}"
+                    width="160"
+                    height="160"
+                    loading="lazy"
+                  >
+                {%- else -%}
+                  <div class="wib__inclusion-placeholder">
+                    {%- case block.settings.icon -%}
+                      {%- when 'gloves' -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>
+                      {%- when 'cable' -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12a7 7 0 0 1 14 0v0a7 7 0 0 1-14 0"/><rect x="10" y="1" width="4" height="4" rx="1"/><path d="M12 5v0"/><path d="M9 19h6l1 4H8l1-4z"/></svg>
+                      {%- when 'tracker' -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="16" rx="2" ry="2"/><line x1="9" y1="4" x2="9" y2="1"/><line x1="15" y1="4" x2="15" y2="1"/><line x1="9" y1="23" x2="9" y2="20"/><line x1="15" y1="23" x2="15" y2="20"/></svg>
+                      {%- when 'guide' -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                      {%- when 'sdk' -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                      {%- else -%}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+                    {%- endcase -%}
+                  </div>
+                {%- endif -%}
+              </div>
+              <p class="wib__inclusion-label">{{ block.settings.label }}</p>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+
+    {# RIGHT COLUMN — Dynamic buy card #}
+    <div class="wib__col wib__col--buy" data-reveal>
+      {%- if p == blank -%}
+        <div class="wib__buy wib__buy--empty">
+          <p class="wib__empty-note">
+            {%- if section.settings.product == blank -%}
+              Select a product in the section settings to enable the buy card.
+            {%- else -%}
+              Product not found. Check the section settings.
+            {%- endif -%}
+          </p>
+        </div>
+      {%- else -%}
+        {%- form 'product', p, class: 'wib__buy', id: 'wib-form-' | append: section_id, novalidate: 'novalidate' -%}
+          <input
+            type="hidden"
+            name="id"
+            value="{{ current_variant.id }}"
+            data-wib-variant-input
+          >
+
+          <div class="wib__price-row">
+            <p class="wib__price">
+              <span data-wib-price>{{ current_variant.price | money }}</span>
+              {%- if p.metafields.custom.price_currency != blank -%}
+                <span class="wib__currency">{{ p.metafields.custom.price_currency }}</span>
+              {%- else -%}
+                <span class="wib__currency">USD</span>
+              {%- endif -%}
+            </p>
+            <p class="wib__tax-info">Taxes included.</p>
+          </div>
+
+          {%- comment -%} SIZE VARIANT PICKER (only shows if product has a Size option) {%- endcomment -%}
+          {%- assign size_option_index = 0 -%}
+          {%- assign has_size = false -%}
+          {%- for option in p.options_with_values -%}
+            {%- assign lower_name = option.name | downcase -%}
+            {%- if lower_name contains 'size' -%}
+              {%- assign size_option_index = forloop.index0 -%}
+              {%- assign has_size = true -%}
+
+              <div class="wib__field">
+                <label class="wib__field-label">{{ option.name | upcase }}</label>
+                <div class="wib__size-options" role="radiogroup" aria-label="{{ option.name }}">
+                  {%- for value in option.values -%}
+                    {%- assign matching_variant = null -%}
+                    {%- for v in p.variants -%}
+                      {%- assign v_size = v.options[size_option_index] -%}
+                      {%- if v_size == value -%}
+                        {%- assign matching_variant = v -%}
+                        {%- break -%}
+                      {%- endif -%}
+                    {%- endfor -%}
+
+                    {%- if matching_variant -%}
+                      <button
+                        type="button"
+                        class="wib__size {% if matching_variant.id == current_variant.id %}wib__size--active{% endif %} {% unless matching_variant.available %}wib__size--sold-out{% endunless %}"
+                        data-wib-size
+                        data-variant-id="{{ matching_variant.id }}"
+                        data-variant-price="{{ matching_variant.price | money }}"
+                        data-variant-available="{{ matching_variant.available }}"
+                        aria-pressed="{% if matching_variant.id == current_variant.id %}true{% else %}false{% endif %}"
+                        {% unless matching_variant.available %}aria-disabled="true"{% endunless %}
+                      >
+                        {{ value }}
+                      </button>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+
+          <div class="wib__field">
+            <label class="wib__field-label" for="wib-qty-{{ section_id }}">QUANTITY</label>
+            <div class="wib__qty">
+              <button type="button" class="wib__qty-btn" data-wib-qty="-1" aria-label="Decrease quantity">−</button>
+              <input
+                id="wib-qty-{{ section_id }}"
+                type="number"
+                name="quantity"
+                value="1"
+                min="1"
+                inputmode="numeric"
+                class="wib__qty-input"
+                data-wib-qty-input
+              >
+              <button type="button" class="wib__qty-btn" data-wib-qty="+1" aria-label="Increase quantity">+</button>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            name="add"
+            class="wib__cta"
+            data-wib-add
+            {% unless current_variant.available %}disabled aria-disabled="true"{% endunless %}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true">
+              <circle cx="9" cy="21" r="1"/>
+              <circle cx="20" cy="21" r="1"/>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+            <span data-wib-cta-label>
+              {%- if current_variant.available -%}ADD TO CART{%- else -%}SOLD OUT{%- endif -%}
+            </span>
+          </button>
+
+          {%- if section.settings.show_dynamic_checkout -%}
+            <div class="wib__dynamic-checkout">
+              {{ form | payment_button }}
+            </div>
+          {%- endif -%}
+
+          {%- if section.settings.show_more_payment_link -%}
+            <a href="{{ p.url }}" class="wib__more-payment">More payment options</a>
+          {%- endif -%}
+        {%- endform -%}
+      {%- endif -%}
+    </div>
+
+  </div>
+</section>
+
+{%- if p != blank -%}
+<script>
+  (function () {
+    var root = document.getElementById('whats-included-buy-{{ section_id }}');
+    if (!root || root.__wibInit) return;
+    root.__wibInit = true;
+
+    var variantInput = root.querySelector('[data-wib-variant-input]');
+    var priceEl = root.querySelector('[data-wib-price]');
+    var sizeButtons = root.querySelectorAll('[data-wib-size]');
+    var qtyInput = root.querySelector('[data-wib-qty-input]');
+    var qtyButtons = root.querySelectorAll('[data-wib-qty]');
+    var addBtn = root.querySelector('[data-wib-add]');
+    var ctaLabel = root.querySelector('[data-wib-cta-label]');
+
+    sizeButtons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (btn.getAttribute('aria-disabled') === 'true') return;
+
+        sizeButtons.forEach(function (b) {
+          b.classList.remove('wib__size--active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('wib__size--active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        var id = btn.getAttribute('data-variant-id');
+        var price = btn.getAttribute('data-variant-price');
+        var available = btn.getAttribute('data-variant-available') === 'true';
+
+        if (variantInput) variantInput.value = id;
+        if (priceEl && price) priceEl.textContent = price;
+
+        if (addBtn && ctaLabel) {
+          if (available) {
+            addBtn.disabled = false;
+            addBtn.removeAttribute('aria-disabled');
+            ctaLabel.textContent = 'ADD TO CART';
+          } else {
+            addBtn.disabled = true;
+            addBtn.setAttribute('aria-disabled', 'true');
+            ctaLabel.textContent = 'SOLD OUT';
+          }
+        }
+      });
+    });
+
+    qtyButtons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var delta = parseInt(btn.getAttribute('data-wib-qty'), 10) || 0;
+        var current = parseInt(qtyInput.value, 10) || 1;
+        var next = Math.max(1, current + delta);
+        qtyInput.value = next;
+      });
+    });
+  })();
+</script>
+{%- endif -%}
+
+{% stylesheet %}
+  .wib {
+    background: #000;
+    font-family: 'Montserrat', system-ui, sans-serif;
+  }
+
+  .wib__inner {
+    max-width: none;
+    margin: 0;
+    padding: 56px 80px;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+
+  @media (max-width: 1100px) {
+    .wib__inner {
+      padding: 56px 32px;
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+  }
+
+  .wib__col {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 600ms cubic-bezier(0.2, 0.8, 0.2, 1), transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .wib__col.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* --- Included --- */
+  .wib__heading {
+    color: #d1d5db;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    line-height: 1.3;
+    text-align: center;
+    margin: 0 0 24px;
+  }
+
+  .wib__included-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+  }
+
+  .wib__inclusion {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 8px;
+    background: linear-gradient(180deg, #0f0817 0%, #08050f 100%);
+    border: 1px solid rgba(168, 85, 247, 0.15);
+    border-radius: 12px;
+    text-align: center;
+    transition: border-color 220ms ease, transform 220ms ease;
+  }
+
+  .wib__inclusion:hover {
+    border-color: rgba(168, 85, 247, 0.45);
+    transform: translateY(-2px);
+  }
+
+  .wib__inclusion-media {
+    width: 80px;
+    height: 80px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(168, 85, 247, 0.06);
+  }
+
+  .wib__inclusion-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .wib__inclusion-placeholder {
+    color: #c084fc;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .wib__inclusion-placeholder svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .wib__inclusion-label {
+    color: #d1d5db;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1.35;
+    margin: 0;
+  }
+
+  @media (max-width: 900px) {
+    .wib__included-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .wib__included-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* --- Buy card --- */
+  .wib__buy {
+    background: linear-gradient(180deg, #0f0817 0%, #08050f 100%);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    border-radius: 16px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: sticky;
+    top: 96px;
+  }
+
+  @media (max-width: 1100px) {
+    .wib__buy {
+      position: static;
+    }
+  }
+
+  .wib__buy--empty {
+    color: #71717a;
+    text-align: center;
+    padding: 40px 28px;
+    font-size: 13px;
+  }
+
+  .wib__empty-note {
+    margin: 0;
+  }
+
+  .wib__price-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .wib__price {
+    color: #fff;
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .wib__currency {
+    color: #a4a6ab;
+    font-size: 16px;
+    font-weight: 600;
+    margin-left: 6px;
+    letter-spacing: 0;
+  }
+
+  .wib__tax-info {
+    color: #71717a;
+    font-size: 12px;
+    margin: 0;
+  }
+
+  .wib__field {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .wib__field-label {
+    color: #d1d5db;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .wib__size-options {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .wib__size {
+    flex: 1 1 0;
+    min-width: 52px;
+    padding: 12px 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #d1d5db;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
+    font-family: inherit;
+  }
+
+  .wib__size:hover {
+    border-color: rgba(168, 85, 247, 0.55);
+    color: #fff;
+  }
+
+  .wib__size--active {
+    background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+    border-color: #a855f7;
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(168, 85, 247, 0.4);
+  }
+
+  .wib__size--sold-out {
+    opacity: 0.4;
+    cursor: not-allowed;
+    text-decoration: line-through;
+  }
+
+  .wib__qty {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 4px;
+    width: fit-content;
+  }
+
+  .wib__qty-btn {
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 180ms ease;
+    font-family: inherit;
+  }
+
+  .wib__qty-btn:hover {
+    background: rgba(168, 85, 247, 0.12);
+  }
+
+  .wib__qty-input {
+    width: 48px;
+    text-align: center;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    -moz-appearance: textfield;
+  }
+
+  .wib__qty-input::-webkit-outer-spin-button,
+  .wib__qty-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .wib__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: transform 200ms ease, box-shadow 200ms ease, opacity 200ms ease;
+    font-family: inherit;
+  }
+
+  .wib__cta:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 32px rgba(168, 85, 247, 0.5);
+  }
+
+  .wib__cta:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .wib__dynamic-checkout {
+    margin: 0;
+  }
+
+  .wib__dynamic-checkout .shopify-payment-button__button {
+    width: 100%;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .wib__more-payment {
+    color: #a4a6ab;
+    font-size: 12px;
+    text-align: center;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 180ms ease;
+  }
+
+  .wib__more-payment:hover {
+    color: #c084fc;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wib__col,
+    .wib__cta,
+    .wib__inclusion {
+      transition: none !important;
+      transform: none !important;
+      opacity: 1 !important;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .wib__inner {
+      padding: 40px 16px;
+    }
+    .wib__buy {
+      padding: 20px;
+    }
+    .wib__price {
+      font-size: 26px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "What's Included + Buy",
+  "tag": "section",
+  "class": "section-wib",
+  "max_blocks": 8,
+  "settings": [
+    { "type": "header", "content": "Buy card" },
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product",
+      "info": "The buy card pulls price, sizes, and inventory from this product. Leave empty to hide the card."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dynamic_checkout",
+      "label": "Show dynamic checkout button",
+      "info": "Shows Apple Pay / Shop Pay / Google Pay based on the customer's device.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_more_payment_link",
+      "label": "Show \"More payment options\" link",
+      "default": true
+    },
+
+    { "type": "header", "content": "What's Included" },
+    {
+      "type": "text",
+      "id": "included_heading",
+      "label": "Heading",
+      "default": "WHAT'S INCLUDED"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "inclusion",
+      "name": "Inclusion",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image (optional)",
+          "info": "Falls back to the icon below if empty."
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon fallback",
+          "default": "gloves",
+          "options": [
+            { "value": "gloves",  "label": "Gloves" },
+            { "value": "cable",   "label": "USB-C cable" },
+            { "value": "tracker", "label": "Wrist tracker" },
+            { "value": "guide",   "label": "Guide (book)" },
+            { "value": "sdk",     "label": "SDK (code brackets)" }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "STRETCHSENSE GAMING GLOVES (PAIR)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "What's Included + Buy",
+      "blocks": [
+        { "type": "inclusion", "settings": { "icon": "gloves",  "label": "STRETCHSENSE GAMING GLOVES (PAIR)" } },
+        { "type": "inclusion", "settings": { "icon": "cable",   "label": "USB-C CHARGING CABLE" } },
+        { "type": "inclusion", "settings": { "icon": "tracker", "label": "WRIST TRACKER MOUNTS" } },
+        { "type": "inclusion", "settings": { "icon": "guide",   "label": "QUICK START GUIDE" } },
+        { "type": "inclusion", "settings": { "icon": "sdk",     "label": "ACCESS TO SENSE SOFTWARE" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
