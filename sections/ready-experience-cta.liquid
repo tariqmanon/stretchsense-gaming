@@ -1,0 +1,380 @@
+{%- liquid
+  assign section_id = section.id
+-%}
+
+<section
+  id="ready-experience-{{ section_id }}"
+  class="ready-exp"
+  data-section-id="{{ section_id }}"
+>
+  <div class="ready-exp__glow" aria-hidden="true"></div>
+
+  <div class="ready-exp__inner">
+    <div class="ready-exp__visual" data-reveal>
+      {%- if section.settings.image != blank -%}
+        <img
+          src="{{ section.settings.image | image_url: width: 640 }}"
+          srcset="{{ section.settings.image | image_url: width: 320 }} 320w, {{ section.settings.image | image_url: width: 640 }} 640w"
+          sizes="(max-width: 900px) 100vw, 320px"
+          alt="{{ section.settings.image.alt | default: section.settings.heading | escape }}"
+          width="320"
+          height="200"
+          loading="lazy"
+        >
+      {%- else -%}
+        <div class="ready-exp__visual-placeholder" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="ready-exp__copy" data-reveal>
+      {%- if section.settings.heading != blank -%}
+        <h2 class="ready-exp__heading">
+          {{ section.settings.heading }}
+          {%- if section.settings.heading_accent != blank -%}
+            <span class="ready-exp__heading-accent">{{ section.settings.heading_accent }}</span>
+          {%- endif -%}
+        </h2>
+      {%- endif -%}
+      {%- if section.settings.body != blank -%}
+        <p class="ready-exp__body">{{ section.settings.body }}</p>
+      {%- endif -%}
+      {%- if section.settings.cta_label != blank -%}
+        <a
+          class="ready-exp__cta"
+          href="{{ section.settings.cta_link | default: '#' }}"
+        >
+          <span>{{ section.settings.cta_label }}</span>
+          <span class="ready-exp__cta-arrow" aria-hidden="true">&rarr;</span>
+        </a>
+      {%- endif -%}
+    </div>
+
+    <div class="ready-exp__logos" data-reveal>
+      {%- for block in section.blocks -%}
+        <div class="ready-exp__logo" {{ block.shopify_attributes }}>
+          {%- if block.settings.logo != blank -%}
+            <img
+              src="{{ block.settings.logo | image_url: width: 240 }}"
+              alt="{{ block.settings.name | escape }}"
+              loading="lazy"
+              height="32"
+            >
+          {%- else -%}
+            <span class="ready-exp__logo-label">{{ block.settings.name }}</span>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .ready-exp {
+    background: #000;
+    font-family: 'Montserrat', system-ui, sans-serif;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ready-exp__glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80%;
+    height: 120%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(ellipse at center, rgba(168, 85, 247, 0.15) 0%, rgba(236, 72, 153, 0.05) 40%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .ready-exp__inner {
+    max-width: none;
+    margin: 0;
+    padding: 40px 80px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 32px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (max-width: 1100px) {
+    .ready-exp__inner {
+      padding: 40px 32px;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      text-align: center;
+    }
+  }
+
+  .ready-exp__visual,
+  .ready-exp__copy,
+  .ready-exp__logos {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 600ms cubic-bezier(0.2, 0.8, 0.2, 1), transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .ready-exp__visual.is-revealed,
+  .ready-exp__copy.is-revealed,
+  .ready-exp__logos.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .ready-exp__visual {
+    width: 280px;
+    height: 160px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1a0d2e 0%, #0a0611 100%);
+  }
+
+  .ready-exp__visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .ready-exp__visual-placeholder {
+    color: #c084fc;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .ready-exp__visual-placeholder svg {
+    width: 60px;
+    height: 60px;
+  }
+
+  .ready-exp__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 560px;
+  }
+
+  @media (max-width: 1100px) {
+    .ready-exp__copy {
+      align-items: center;
+      margin: 0 auto;
+    }
+  }
+
+  .ready-exp__heading {
+    color: #fff;
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+
+  .ready-exp__heading-accent {
+    display: block;
+    background: linear-gradient(90deg, #c084fc 0%, #ec4899 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  .ready-exp__body {
+    color: #a4a6ab;
+    font-size: 13px;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .ready-exp__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+    color: #fff;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    margin-top: 8px;
+    width: fit-content;
+    transition: transform 200ms ease, box-shadow 200ms ease;
+  }
+
+  @media (max-width: 1100px) {
+    .ready-exp__cta {
+      align-self: center;
+    }
+  }
+
+  .ready-exp__cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(168, 85, 247, 0.45);
+  }
+
+  .ready-exp__cta-arrow {
+    transition: transform 200ms ease;
+  }
+
+  .ready-exp__cta:hover .ready-exp__cta-arrow {
+    transform: translateX(3px);
+  }
+
+  .ready-exp__logos {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  @media (max-width: 1100px) {
+    .ready-exp__logos {
+      justify-content: center;
+    }
+  }
+
+  .ready-exp__logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    filter: brightness(0) invert(1);
+    opacity: 0.7;
+    transition: opacity 200ms ease;
+  }
+
+  .ready-exp__logo:hover {
+    opacity: 1;
+  }
+
+  .ready-exp__logo img {
+    height: 26px;
+    width: auto;
+    display: block;
+  }
+
+  .ready-exp__logo-label {
+    color: #d1d5db;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ready-exp__visual,
+    .ready-exp__copy,
+    .ready-exp__logos,
+    .ready-exp__cta {
+      transition: none !important;
+      transform: none !important;
+      opacity: 1 !important;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .ready-exp__inner {
+      padding: 32px 16px;
+    }
+
+    .ready-exp__heading {
+      font-size: 22px;
+    }
+
+    .ready-exp__logos {
+      gap: 16px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Ready to Experience CTA",
+  "tag": "section",
+  "class": "section-ready-exp",
+  "max_blocks": 8,
+  "settings": [
+    { "type": "header", "content": "Visual" },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Left image (product / lifestyle)"
+    },
+
+    { "type": "header", "content": "Copy" },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading (first line)",
+      "default": "READY TO EXPERIENCE"
+    },
+    {
+      "type": "text",
+      "id": "heading_accent",
+      "label": "Heading (gradient line)",
+      "default": "VR WITHOUT LIMITS?"
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "Body",
+      "default": "Join thousands of gamers, creators, and VR enthusiasts who've already unlocked the future of hand tracking."
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA label"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "CTA link"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "platform_logo",
+      "name": "Platform logo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "logo",
+          "label": "Logo (SVG or PNG on transparent bg)",
+          "info": "Falls back to the name text below if empty."
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Platform name",
+          "default": "STEAMVR"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ready to Experience CTA",
+      "blocks": [
+        { "type": "platform_logo", "settings": { "name": "STEAM VR" } },
+        { "type": "platform_logo", "settings": { "name": "META" } },
+        { "type": "platform_logo", "settings": { "name": "PICO" } },
+        { "type": "platform_logo", "settings": { "name": "VALVE" } },
+        { "type": "platform_logo", "settings": { "name": "VIVE" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

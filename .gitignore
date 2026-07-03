@@ -2,3 +2,11 @@ node_modules/
 .DS_Store
 .env
 shopify.theme.toml
+
+# Shopify admin-managed files (mirrors .shopifyignore protections)
+# These live only in Shopify admin — never commit local copies from `shopify theme pull`
+templates/*.json
+templates/customers/*.json
+config/settings_data.json
+sections/*-group.json
+.shopifyignore.bak
