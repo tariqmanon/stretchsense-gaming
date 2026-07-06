@@ -6,6 +6,18 @@
   assign size_guide = p.metafields.custom.size_guide_image.value
   assign button_label = block.settings.button_label | default: 'Size Guide'
   assign modal_title = block.settings.modal_title | default: 'Size Guide'
+
+  assign size_guide_src = ''
+  assign size_guide_alt = p.title | append: ' size guide'
+  if size_guide != blank
+    assign size_guide_src = size_guide | image_url: width: 1200
+    if size_guide_src == blank and size_guide.url != blank
+      assign size_guide_src = size_guide.url
+    endif
+    if size_guide.alt != blank
+      assign size_guide_alt = size_guide.alt
+    endif
+  endif
 -%}
 
 <div class="size-guide-block" {{ block.shopify_attributes }}>
@@ -49,10 +61,10 @@
       </div>
 
       <div class="size-guide-block__body">
-        {%- if size_guide != blank -%}
+        {%- if size_guide_src != blank -%}
           <img
-            src="{{ size_guide.url }}"
-            alt="{{ p.title | escape }} size guide"
+            src="{{ size_guide_src }}"
+            alt="{{ size_guide_alt | escape }}"
             class="size-guide-block__image"
             loading="lazy"
           >
@@ -72,7 +84,7 @@
   </div>
 </div>
 
-{% stylesheet %}
+<style>
   .size-guide-block {
     margin: 8px 0;
     font-family: inherit;
@@ -261,7 +273,7 @@
       animation: none;
     }
   }
-{% endstylesheet %}
+</style>
 
 <script>
   (function () {
