@@ -1,7 +1,6 @@
 {%- liquid
   assign section_id = section.id
 -%}
-
 <section
   id="feels-different-{{ section_id }}"
   class="feels-different"
@@ -22,52 +21,89 @@
     </div>
 
     <div class="feels-different__col feels-different__col--compare" data-reveal>
+      {%- liquid
+        assign left_split = section.settings.compare_left_items | newline_to_br | split: '<br />'
+        assign right_split = section.settings.compare_right_items | newline_to_br | split: '<br />'
+
+        capture left_joined
+          for item in left_split
+            assign trimmed = item | strip
+            if trimmed != ''
+              echo trimmed
+              echo '|||'
+            endif
+          endfor
+        endcapture
+        assign left_items = left_joined | split: '|||'
+        assign left_count = left_items | size
+
+        capture right_joined
+          for item in right_split
+            assign trimmed = item | strip
+            if trimmed != ''
+              echo trimmed
+              echo '|||'
+            endif
+          endfor
+        endcapture
+        assign right_items = right_joined | split: '|||'
+        assign right_count = right_items | size
+
+        assign max_count = left_count
+        if right_count > left_count
+          assign max_count = right_count
+        endif
+        assign middle_row = max_count | minus: 1 | divided_by: 2
+      -%}
+
       <div class="feels-different__compare">
-        <div class="feels-different__compare-col">
+        <div class="feels-different__compare-grid">
           <h3 class="feels-different__compare-heading feels-different__compare-heading--muted">
             {{ section.settings.compare_left_heading | default: 'CONTROLLERS' }}
           </h3>
-          <ul class="feels-different__compare-list feels-different__compare-list--negative">
-            {%- assign left_items = section.settings.compare_left_items | newline_to_br | split: '<br />' -%}
-            {%- for item in left_items -%}
-              {%- assign trimmed = item | strip -%}
-              {%- if trimmed != '' -%}
-                <li>
-                  <span class="feels-different__check feels-different__check--off" aria-hidden="true"></span>
-                  <span>{{ trimmed }}</span>
-                </li>
-              {%- endif -%}
-            {%- endfor -%}
-          </ul>
-        </div>
-
-        <div class="feels-different__compare-divider" aria-hidden="true">
-          <span>VS</span>
-        </div>
-
-        <div class="feels-different__compare-col">
+          <div class="feels-different__compare-vs-header" aria-hidden="true"></div>
           <h3 class="feels-different__compare-heading">
             {{ section.settings.compare_right_heading | default: 'STRETCHSENSE GLOVES' }}
           </h3>
-          <ul class="feels-different__compare-list feels-different__compare-list--positive">
-            {%- assign right_items = section.settings.compare_right_items | newline_to_br | split: '<br />' -%}
-            {%- for item in right_items -%}
-              {%- assign trimmed = item | strip -%}
-              {%- if trimmed != '' -%}
-                <li>
-                  <span class="feels-different__check feels-different__check--on" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                  </span>
-                  <span>{{ trimmed }}</span>
-                </li>
+
+          {%- for i in (0..99) -%}
+            {%- if i >= max_count -%}{%- break -%}{%- endif -%}
+            {%- assign left_text = left_items[i] -%}
+            {%- assign right_text = right_items[i] -%}
+
+            <div class="feels-different__compare-cell feels-different__compare-cell--left">
+              {%- if left_text != blank -%}
+                <span class="feels-different__check feels-different__check--off" aria-hidden="true"></span>
+                <span>{{ left_text }}</span>
               {%- endif -%}
-            {%- endfor -%}
-          </ul>
+            </div>
+
+            <div class="feels-different__compare-cell feels-different__compare-cell--vs" aria-hidden="true">
+              {%- if i == middle_row -%}
+                <span class="feels-different__compare-vs-badge">VS</span>
+              {%- endif -%}
+            </div>
+
+            <div class="feels-different__compare-cell feels-different__compare-cell--right">
+              {%- if right_text != blank -%}
+                <span class="feels-different__check feels-different__check--on" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+                <span>{{ right_text }}</span>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
         </div>
       </div>
     </div>
 
-    <div class="feels-different__col feels-different__col--personas" data-reveal>
+    <div
+      class="feels-different__col feels-different__col--personas{% if section.settings.personas_bg_image != blank %} feels-different__col--personas-has-bg{% endif %}"
+      data-reveal
+      {%- if section.settings.personas_bg_image != blank %}
+        style="--personas-bg-image: url('{{ section.settings.personas_bg_image | image_url: width: 1200 }}'); --personas-overlay-opacity: {{ section.settings.personas_overlay_opacity | default: 55 | divided_by: 100.0 }};"
+      {%- endif -%}
+    >
       {%- if section.settings.personas_eyebrow != blank -%}
         <p class="feels-different__eyebrow feels-different__eyebrow--personas">{{ section.settings.personas_eyebrow }}</p>
       {%- endif -%}
@@ -189,12 +225,19 @@
     background: linear-gradient(180deg, #0f0817 0%, #08050f 100%);
     border: 1px solid rgba(168, 85, 247, 0.18);
     border-radius: 16px;
-    padding: 28px 24px;
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 16px;
-    align-items: start;
+    padding: 28px 14px;
     height: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .feels-different__compare-grid {
+    display: grid;
+    grid-template-columns: max-content auto max-content;
+    column-gap: 60px;
+    row-gap: 12px;
+    align-items: center;
+    justify-items: start;
   }
 
   .feels-different__compare-heading {
@@ -202,42 +245,60 @@
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    margin: 0 0 16px;
-    text-align: center;
-  }
-
-  .feels-different__compare-heading--muted {
-    color: #71717a;
-  }
-
-  .feels-different__compare-heading {
+    margin: 0 0 4px;
+    text-align: left;
+    padding-left: 0;
     color: #c084fc;
+    justify-self: start;
+    white-space: nowrap;
   }
 
   .feels-different__compare-heading--muted {
     color: #71717a;
   }
 
-  .feels-different__compare-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  .feels-different__compare-vs-header {
+    /* empty spacer cell in header row to keep 3-column grid aligned */
   }
 
-  .feels-different__compare-list li {
+  .feels-different__compare-cell {
     display: flex;
     align-items: center;
     gap: 10px;
     font-size: 13px;
     line-height: 1.4;
+    min-height: 22px;
+    white-space: nowrap;
+  }
+
+  .feels-different__compare-cell--left {
+    color: #71717a;
+  }
+
+  .feels-different__compare-cell--right {
     color: #d1d5db;
   }
 
-  .feels-different__compare-list--negative li {
+  .feels-different__compare-cell--vs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    justify-self: center;
+  }
+
+  .feels-different__compare-vs-badge {
+    font-size: 11px;
+    font-weight: 700;
     color: #71717a;
+    letter-spacing: 0.14em;
+    background: rgba(168, 85, 247, 0.14);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .feels-different__check {
@@ -265,30 +326,9 @@
     height: 12px;
   }
 
-  .feels-different__compare-divider {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding-top: 34px;
-  }
-
-  .feels-different__compare-divider span {
-    font-size: 11px;
-    font-weight: 700;
-    color: #71717a;
-    letter-spacing: 0.14em;
-    background: rgba(168, 85, 247, 0.14);
-    border: 1px solid rgba(168, 85, 247, 0.3);
-    border-radius: 50%;
-    width: 34px;
-    height: 34px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-
   /* --- Personas column --- */
   .feels-different__col--personas {
+    position: relative;
     background: linear-gradient(180deg, #0f0817 0%, #08050f 100%);
     border: 1px solid rgba(168, 85, 247, 0.18);
     border-radius: 16px;
@@ -298,6 +338,34 @@
     align-items: center;
     text-align: center;
     gap: 12px;
+    overflow: hidden;
+    z-index: 0;
+  }
+
+  .feels-different__col--personas-has-bg {
+    background-image: var(--personas-bg-image);
+    background-size: cover;
+    background-position: center 30%;
+    background-repeat: no-repeat;
+  }
+
+  .feels-different__col--personas-has-bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(8, 5, 15, calc(var(--personas-overlay-opacity, 0.55) * 0.6)) 0%,
+      rgba(8, 5, 15, var(--personas-overlay-opacity, 0.55)) 55%,
+      rgba(8, 5, 15, 0.92) 100%
+    );
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .feels-different__col--personas > * {
+    position: relative;
+    z-index: 1;
   }
 
   .feels-different__personas-heading {
@@ -449,6 +517,21 @@
 
     { "type": "header", "content": "Right column — Personas" },
     {
+      "type": "image_picker",
+      "id": "personas_bg_image",
+      "label": "Background image"
+    },
+    {
+      "type": "range",
+      "id": "personas_overlay_opacity",
+      "label": "Overlay darkness",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "unit": "%",
+      "default": 55
+    },
+    {
       "type": "text",
       "id": "personas_eyebrow",
       "label": "Personas eyebrow",
@@ -478,9 +561,9 @@
           "label": "Icon",
           "default": "vtuber",
           "options": [
-            { "value": "vtuber",   "label": "VTuber" },
+            { "value": "vtuber", "label": "VTuber" },
             { "value": "streamer", "label": "Streamer" },
-            { "value": "creator",  "label": "Content creator" },
+            { "value": "creator", "label": "Content creator" },
             { "value": "animator", "label": "Animator" }
           ]
         },
@@ -497,9 +580,9 @@
     {
       "name": "Why + Personas",
       "blocks": [
-        { "type": "persona", "settings": { "icon": "vtuber",   "label": "VTUBERS" } },
+        { "type": "persona", "settings": { "icon": "vtuber", "label": "VTUBERS" } },
         { "type": "persona", "settings": { "icon": "streamer", "label": "STREAMERS" } },
-        { "type": "persona", "settings": { "icon": "creator",  "label": "CONTENT CREATORS" } },
+        { "type": "persona", "settings": { "icon": "creator", "label": "CONTENT CREATORS" } },
         { "type": "persona", "settings": { "icon": "animator", "label": "ANIMATORS" } }
       ]
     }

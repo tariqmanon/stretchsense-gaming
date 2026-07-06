@@ -8,5 +8,6 @@ shopify.theme.toml
 templates/*.json
 templates/customers/*.json
 config/settings_data.json
+config/markets.json
 sections/*-group.json
 .shopifyignore.bak
