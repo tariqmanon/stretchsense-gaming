@@ -1,7 +1,6 @@
 {%- liquid
   assign section_id = section.id
 -%}
-
 <script>
   (() => {
     if (window.__headerGamingScrollInit) return;
@@ -16,9 +15,14 @@
     let ticking = false;
 
     const update = () => {
+      if (header.classList.contains('header-gaming--menu-open')) {
+        header.classList.remove('header-gaming--hidden');
+        lastY = window.scrollY;
+        ticking = false;
+        return;
+      }
       const y = window.scrollY;
       const diff = y - lastY;
-
       if (y <= threshold) {
         header.classList.remove('header-gaming--hidden');
       } else if (diff > delta) {
@@ -26,7 +30,6 @@
       } else if (diff < -delta) {
         header.classList.remove('header-gaming--hidden');
       }
-
       lastY = y;
       ticking = false;
     };
@@ -80,43 +83,171 @@
       {%- endif -%}
     </a>
 
-    <nav class="header-gaming__nav" aria-label="Primary">
-      {%- for block in section.blocks -%}
-        {%- if block.type == 'link' -%}
-          {%- assign is_active = false -%}
-          {%- if block.settings.active -%}
-            {%- assign is_active = true -%}
-          {%- endif -%}
+    <button
+      type="button"
+      class="header-gaming__menu-toggle"
+      aria-expanded="false"
+      aria-controls="header-gaming-nav-{{ section_id }}"
+      aria-label="Toggle menu"
+      data-header-menu-toggle
+    >
+      <span class="header-gaming__menu-icon" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+    </button>
 
-          <a
-            href="{{ block.settings.link | default: '#' }}"
-            class="header-gaming__link{% if is_active %} header-gaming__link--active{% endif %}"
-            {% if is_active %}aria-current="page"{% endif %}
-            {{ block.shopify_attributes }}
-          >
-            <span>{{ block.settings.label }}</span>
-            {%- if is_active -%}
-              <span class="header-gaming__underline" aria-hidden="true"></span>
+    <div
+      class="header-gaming__nav-wrapper"
+      id="header-gaming-nav-{{ section_id }}"
+      data-header-nav-wrapper
+    >
+      <nav class="header-gaming__nav" aria-label="Primary">
+        <div class="header-gaming__nav-links">
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'link' -%}
+              {%- liquid
+                assign is_active = false
+                if block.settings.active
+                  assign is_active = true
+                endif
+
+                assign has_submenu = false
+                assign submenu_lines = block.settings.submenu_items | newline_to_br | split: '<br />'
+                if block.settings.has_submenu and submenu_lines.size > 0
+                  assign has_submenu = true
+                endif
+              -%}
+              <div class="header-gaming__nav-item{% if has_submenu %} header-gaming__nav-item--has-submenu{% endif %}" {{ block.shopify_attributes }}>
+                <div class="header-gaming__link-row">
+                  <a
+                    href="{{ block.settings.link | default: '#' }}"
+                    class="header-gaming__link{% if is_active %} header-gaming__link--active{% endif %}"
+                    {% if is_active %}aria-current="page"{% endif %}
+                  >
+                    <span>{{ block.settings.label }}</span>
+                    {%- if is_active -%}
+                      <span class="header-gaming__underline" aria-hidden="true"></span>
+                    {%- endif -%}
+                  </a>
+
+                  {%- if has_submenu -%}
+                    <button
+                      type="button"
+                      class="header-gaming__submenu-toggle"
+                      aria-expanded="false"
+                      aria-label="Toggle {{ block.settings.label }} submenu"
+                      data-submenu-toggle
+                    >
+                      <svg class="header-gaming__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="6 9 12 15 18 9"/>
+                      </svg>
+                    </button>
+                  {%- endif -%}
+                </div>
+
+                {%- if has_submenu -%}
+                  <div class="header-gaming__submenu" data-submenu>
+                    {%- for line in submenu_lines -%}
+                      {%- assign trimmed_line = line | strip -%}
+                      {%- if trimmed_line != '' -%}
+                        {%- assign parts = trimmed_line | split: '|' -%}
+                        {%- if parts.size >= 2 -%}
+                          <a href="{{ parts[1] | strip | default: '#' }}" class="header-gaming__submenu-link">
+                            {{ parts[0] | strip }}
+                          </a>
+                        {%- endif -%}
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </div>
+                {%- endif -%}
+              </div>
             {%- endif -%}
+          {%- endfor -%}
+        </div>
+
+        {%- if section.settings.cta_label != blank -%}
+          <a
+            href="{{ section.settings.cta_link | default: '#' }}"
+            class="header-gaming__cta"
+          >
+            {{ section.settings.cta_label }}
           </a>
         {%- endif -%}
-      {%- endfor -%}
+      </nav>
+    </div>
 
-      {%- if section.settings.cta_label != blank -%}
-        <a
-          href="{{ section.settings.cta_link | default: '#' }}"
-          class="header-gaming__cta"
-        >
-          {{ section.settings.cta_label }}
-        </a>
-      {%- endif -%}
-
-      <div class="header-gaming__actions">
-        {%- render 'header-actions', section: section, display_style: 'icon' -%}
-      </div>
-    </nav>
+    <div class="header-gaming__actions">
+      {%- render 'header-actions', section: section, display_style: 'icon' -%}
+    </div>
   </div>
+
+  <div class="header-gaming__backdrop" data-header-backdrop></div>
 </header>
+
+<script>
+  (() => {
+    const header = document.getElementById('header-gaming-{{ section_id }}');
+    if (!header) return;
+
+    const toggleBtn = header.querySelector('[data-header-menu-toggle]');
+    const navWrapper = header.querySelector('[data-header-nav-wrapper]');
+    const backdrop = header.querySelector('[data-header-backdrop]');
+
+    const closeMenu = () => {
+      header.classList.remove('header-gaming--menu-open');
+      toggleBtn.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    };
+
+    const openMenu = () => {
+      header.classList.add('header-gaming--menu-open');
+      header.classList.remove('header-gaming--hidden');
+      toggleBtn.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+    };
+
+    toggleBtn?.addEventListener('click', () => {
+      const isOpen = header.classList.contains('header-gaming--menu-open');
+      isOpen ? closeMenu() : openMenu();
+    });
+
+    backdrop?.addEventListener('click', closeMenu);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeMenu();
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 900) closeMenu();
+    });
+
+    navWrapper?.querySelectorAll('[data-submenu-toggle]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const item = btn.closest('.header-gaming__nav-item');
+        if (!item) return;
+        const isOpen = item.classList.contains('is-open');
+
+        navWrapper.querySelectorAll('.header-gaming__nav-item.is-open').forEach((openItem) => {
+          if (openItem !== item) {
+            openItem.classList.remove('is-open');
+            openItem.querySelector('[data-submenu-toggle]')?.setAttribute('aria-expanded', 'false');
+          }
+        });
+
+        item.classList.toggle('is-open', !isOpen);
+        btn.setAttribute('aria-expanded', String(!isOpen));
+      });
+    });
+
+    navWrapper?.querySelectorAll('.header-gaming__link, .header-gaming__submenu-link, .header-gaming__cta').forEach((link) => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 900) closeMenu();
+      });
+    });
+  })();
+</script>
 
 {% stylesheet %}
   .header-gaming {
@@ -168,10 +299,73 @@
     display: block;
   }
 
+  /* --- Mobile menu toggle button (hidden on desktop) --- */
+  .header-gaming__menu-toggle {
+    display: none;
+    background: transparent;
+    border: none;
+    padding: 8px;
+    margin-left: auto;
+    cursor: pointer;
+    color: #fff;
+  }
+
+  .header-gaming__menu-icon {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 22px;
+  }
+
+  .header-gaming__menu-icon span {
+    display: block;
+    height: 2px;
+    width: 100%;
+    background: #fff;
+    border-radius: 2px;
+    transition: transform 200ms ease, opacity 200ms ease;
+  }
+
+  .header-gaming--menu-open .header-gaming__menu-icon span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .header-gaming--menu-open .header-gaming__menu-icon span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .header-gaming--menu-open .header-gaming__menu-icon span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* --- Nav --- */
+  .header-gaming__nav-wrapper {
+    display: flex;
+    flex: 1;
+    justify-content: flex-end;
+  }
+
   .header-gaming__nav {
     display: flex;
     align-items: center;
     gap: 22px;
+  }
+
+  .header-gaming__nav-links {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+  }
+
+  .header-gaming__nav-item {
+    position: relative;
+  }
+
+  .header-gaming__link-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
   }
 
   .header-gaming__link {
@@ -204,6 +398,68 @@
     background: #a855f7;
   }
 
+  .header-gaming__submenu-toggle {
+    background: transparent;
+    border: none;
+    padding: 2px;
+    color: #a1a1aa;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .header-gaming__submenu-toggle:hover {
+    color: #a855f7;
+  }
+
+  .header-gaming__chevron {
+    width: 14px;
+    height: 14px;
+    transition: transform 200ms ease;
+  }
+
+  .header-gaming__nav-item.is-open .header-gaming__chevron {
+    transform: rotate(180deg);
+  }
+
+  /* Desktop dropdown submenu */
+  .header-gaming__submenu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 14px);
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 200px;
+    background: #0f0817;
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    border-radius: 10px;
+    padding: 8px;
+    flex-direction: column;
+    gap: 2px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    z-index: 5;
+  }
+
+  .header-gaming__nav-item--has-submenu:hover .header-gaming__submenu,
+  .header-gaming__nav-item--has-submenu.is-open .header-gaming__submenu {
+    display: flex;
+  }
+
+  .header-gaming__submenu-link {
+    color: #d1d5db;
+    font-size: 13px;
+    text-decoration: none;
+    padding: 8px 10px;
+    border-radius: 6px;
+    transition: background 150ms ease, color 150ms ease;
+  }
+
+  .header-gaming__submenu-link:hover {
+    background: rgba(168, 85, 247, 0.14);
+    color: #fff;
+  }
+
   .header-gaming__cta {
     border: 1px solid #a855f7;
     color: #fff;
@@ -215,6 +471,7 @@
     line-height: 1.43;
     text-decoration: none;
     transition: background 150ms ease;
+    white-space: nowrap;
   }
 
   .header-gaming__cta:hover {
@@ -234,7 +491,6 @@
     color: #fff;
   }
 
-  /* Account button — styled to match gaming theme */
   .header-gaming__actions .account-button {
     background: transparent;
     border: none;
@@ -267,14 +523,12 @@
     stroke: currentColor;
   }
 
-  /* Force the signed-out avatar SVG to show */
   .header-gaming__actions .account-button [slot='signed-out-avatar'] {
     display: inline-flex;
     align-items: center;
     color: inherit;
   }
 
-  /* Cart icon trigger button */
   .header-gaming__actions [data-testid='cart-drawer-trigger'],
   .header-gaming__actions .action__cart {
     background: transparent;
@@ -309,17 +563,14 @@
     width: 24px;
     height: 24px;
     display: block;
-    /* clear the donut mask the theme applies for default header */
     mask: none !important;
     -webkit-mask: none !important;
   }
 
-  /* The "Cart" text label — hide, we want icon-only */
   .header-gaming__actions .header-actions__cart-icon > span:not(.svg-wrapper):not(.cart-bubble) {
     display: none;
   }
 
-  /* Cart bubble — orange pill in top-right corner */
   .header-gaming__actions .cart-bubble {
     position: absolute;
     top: -6px;
@@ -358,21 +609,127 @@
     font-weight: 700;
   }
 
+  /* --- Backdrop (mobile only, shown behind open drawer) --- */
+  .header-gaming__backdrop {
+    display: none;
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 200ms ease;
+    pointer-events: none;
+  }
+
+  /* =========================================================
+     MOBILE (<= 900px): hamburger + slide-down drawer
+     ========================================================= */
   @media (max-width: 900px) {
     .header-gaming__inner {
       padding: 12px 16px;
     }
 
+    .header-gaming__menu-toggle {
+      display: inline-flex;
+    }
+
+    .header-gaming__nav-wrapper {
+      position: fixed;
+      top: 64px;
+      left: 0;
+      right: 0;
+      max-height: 0;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.98);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      transition: max-height 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+      justify-content: flex-start;
+    }
+
+    .header-gaming--menu-open .header-gaming__nav-wrapper {
+      max-height: calc(100vh - 64px);
+      overflow-y: auto;
+    }
+
+    .header-gaming--menu-open .header-gaming__backdrop {
+      display: block;
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 40;
+    }
+
     .header-gaming__nav {
-      gap: 14px;
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+      padding: 12px 20px 28px;
+      gap: 4px;
+    }
+
+    .header-gaming__nav-links {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      width: 100%;
+    }
+
+    .header-gaming__nav-item {
+      width: 100%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .header-gaming__link-row {
+      width: 100%;
+      justify-content: space-between;
+      padding: 4px 0;
     }
 
     .header-gaming__link {
+      flex-direction: row;
+      justify-content: space-between;
+      width: 100%;
+      padding: 14px 4px;
+      gap: 0;
+    }
+
+    .header-gaming__underline {
       display: none;
     }
 
+    .header-gaming__submenu-toggle {
+      padding: 14px 8px;
+    }
+
+    .header-gaming__submenu {
+      display: none;
+      position: static;
+      transform: none;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.03);
+      border: none;
+      border-radius: 8px;
+      margin: 0 0 8px;
+      box-shadow: none;
+    }
+
+    .header-gaming__nav-item.is-open .header-gaming__submenu {
+      display: flex;
+    }
+
+    .header-gaming__submenu-link {
+      padding: 12px 14px;
+    }
+
     .header-gaming__cta {
-      padding: 6px 14px;
+      margin-top: 16px;
+      text-align: center;
+      width: 100%;
+      padding: 12px 20px;
     }
   }
 {% endstylesheet %}
@@ -431,8 +788,25 @@
         {
           "type": "checkbox",
           "id": "active",
-          "label": "Show as active (orange + underline)",
+          "label": "Show as active (purple + underline)",
           "default": false
+        },
+        {
+          "type": "header",
+          "content": "Submenu (optional)"
+        },
+        {
+          "type": "checkbox",
+          "id": "has_submenu",
+          "label": "Enable submenu",
+          "default": false
+        },
+        {
+          "type": "textarea",
+          "id": "submenu_items",
+          "label": "Submenu items",
+          "info": "One per line, format: Label | URL",
+          "default": "Sublink 1 | #\nSublink 2 | #"
         }
       ]
     }

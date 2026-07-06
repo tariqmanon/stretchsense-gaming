@@ -30,4 +30,5 @@ jobs:
             --ignore="templates/*.json" \
             --ignore="templates/customers/*.json" \
             --ignore="config/settings_data.json" \
+            --ignore="config/markets.json" \
             --ignore="sections/*-group.json"

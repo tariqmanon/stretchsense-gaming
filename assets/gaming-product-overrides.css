@@ -1,7 +1,7 @@
 /* StretchSense gaming product page overrides — match Figma styling */
 
 body[data-template-product] {
-  --gaming-orange: #ff6b1a;
+  --gaming-brand: #A855F7;
 }
 
 /* Product page background — pure black to match brand */
@@ -25,7 +25,7 @@ body[data-template-product] {
   color: #fff !important;
 }
 
-/* Bullet list — orange dot + clean spacing */
+/* Bullet list — purple dot + clean spacing */
 .template-product .rte ul,
 .template-product .metafield-rich_text_field ul,
 .product-information__description ul {
@@ -59,8 +59,8 @@ body[data-template-product] {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--gaming-orange);
-  box-shadow: 0 0 6px rgba(255, 107, 26, 0.6);
+  background: var(--gaming-brand);
+  box-shadow: 0 0 6px rgba(168, 85, 247, 0.6);
 }
 
 /* Price — Bold 36px, white. Includes both wrapper and inner span.price. */
@@ -111,15 +111,15 @@ body[data-template-product] {
 
 .template-product .quantity button:hover,
 .template-product quantity-input button:hover {
-  color: var(--gaming-orange) !important;
+  color: var(--gaming-brand) !important;
 }
 
-/* Primary add-to-cart button — gaming orange */
+/* Primary add-to-cart button — brand purple */
 .template-product .product-form__buttons .button,
 .template-product add-to-cart-component button,
 .template-product .product-form__submit,
 .template-product [data-type='add-to-cart-form'] button[type='submit'] {
-  background: var(--gaming-orange) !important;
+  background: var(--gaming-brand) !important;
   color: #fff !important;
   border: none !important;
   border-radius: 8px !important;
@@ -135,14 +135,14 @@ body[data-template-product] {
 .template-product .product-form__buttons .button:hover:not(:disabled),
 .template-product add-to-cart-component button:hover:not(:disabled),
 .template-product [data-type='add-to-cart-form'] button[type='submit']:hover:not(:disabled) {
-  background: #ff7a30 !important;
+  background: #c084fc !important;
   transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(255, 107, 26, 0.4);
+  box-shadow: 0 12px 28px rgba(168, 85, 247, 0.4);
 }
 
 .template-product .product-form__buttons .button:disabled,
 .template-product add-to-cart-component button:disabled {
-  background: rgba(255, 107, 26, 0.4) !important;
+  background: rgba(168, 85, 247, 0.4) !important;
   cursor: not-allowed !important;
   transform: none !important;
   box-shadow: none !important;
@@ -167,7 +167,7 @@ body[data-template-product] {
 
 .template-product .shopify-payment-button__button:hover {
   background: rgba(255, 255, 255, 0.08) !important;
-  border-color: var(--gaming-orange) !important;
+  border-color: var(--gaming-brand) !important;
 }
 
 /* Product media gallery — black background, no white framing */
@@ -222,7 +222,7 @@ body[data-template-product] {
   box-shadow: none !important;
 }
 
-/* Pill buttons — dark default, orange when selected */
+/* Pill buttons — dark default, purple when selected */
 .template-product .variant-option__button-label,
 .template-product variant-picker .button,
 .template-product .product-form__input--pill label,
@@ -246,9 +246,9 @@ body[data-template-product] {
 .template-product variant-picker .button:hover,
 .template-product .product-form__input--pill label:hover,
 .template-product input[type='radio'] + label:hover {
-  border-color: var(--gaming-orange) !important;
-  color: var(--gaming-orange) !important;
-  background: rgba(255, 107, 26, 0.06) !important;
+  border-color: var(--gaming-brand) !important;
+  color: var(--gaming-brand) !important;
+  background: rgba(168, 85, 247, 0.06) !important;
 }
 
 /* Selected state — match by every flavor of selected marker */
@@ -259,9 +259,9 @@ body[data-template-product] {
 .template-product variant-picker input[type='radio']:checked + label,
 .template-product input[type='radio']:checked + label,
 .template-product .product-form__input--pill input:checked + label {
-  border-color: var(--gaming-orange) !important;
-  background: rgba(255, 107, 26, 0.14) !important;
-  color: var(--gaming-orange) !important;
+  border-color: var(--gaming-brand) !important;
+  background: rgba(168, 85, 247, 0.14) !important;
+  color: var(--gaming-brand) !important;
 }
 
 /* Sold out variant */

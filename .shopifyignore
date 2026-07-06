@@ -8,5 +8,8 @@ templates/customers/*.json
 # Theme settings (colors, fonts, schemes, all theme-wide config)
 config/settings_data.json
 
+# Shopify Markets config (currency/language settings — admin-managed)
+config/markets.json
+
 # Section groups (header + footer block ordering, announcement bar, etc.)
 sections/*-group.json

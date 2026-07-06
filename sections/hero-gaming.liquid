@@ -103,13 +103,13 @@
   }
 
   .hero-gaming__inner {
-    max-width: none;
-    margin: 0;
+    max-width: 1360px;
+    margin: 0 auto;
     padding: 32px 80px;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
-    gap: 32px;
+    display: flex;
+    justify-content: center;
     align-items: center;
+    gap: 80px;
     min-height: 520px;
     position: relative;
     z-index: 1;
@@ -118,6 +118,7 @@
   @media (max-width: 1100px) {
     .hero-gaming__inner {
       padding: 32px 32px;
+      gap: 40px;
     }
   }
 
@@ -125,13 +126,8 @@
     display: flex;
     flex-direction: column;
     gap: 18px;
-    max-width: 420px;
-  }
-
-  @media (min-width: 992px) {
-    .hero-gaming__copy {
-      padding-left: 82px;
-    }
+    flex: 0 1 480px;
+    max-width: 480px;
   }
 
   .hero-gaming__copy > * {
@@ -267,8 +263,8 @@
     position: relative;
     width: 100%;
     aspect-ratio: 1 / 1;
-    max-width: 600px;
-    margin-left: auto;
+    max-width: 560px;
+    justify-self: start;
     opacity: 0;
     transform: scale(0.96);
     animation: hero-image-in 1000ms cubic-bezier(0.2, 0.8, 0.2, 1) 200ms forwards;
@@ -328,6 +324,11 @@
     .hero-gaming__copy {
       max-width: none;
       align-items: center;
+      justify-self: center;
+    }
+
+    .hero-gaming__visual {
+      justify-self: center;
     }
 
     .hero-gaming__description {
