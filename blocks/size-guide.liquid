@@ -66,6 +66,8 @@
             src="{{ size_guide_src }}"
             alt="{{ size_guide_alt | escape }}"
             class="size-guide-block__image"
+            width="{{ size_guide.width | default: 1200 }}"
+            height="{{ size_guide.height | default: 900 }}"
             loading="lazy"
           >
         {%- else -%}
@@ -150,8 +152,9 @@
     position: relative;
     background: #fff;
     border-radius: 12px;
-    max-width: min(900px, 90vw);
-    max-height: 90vh;
+    width: auto;
+    max-width: min(560px, 90vw);
+    max-height: 85vh;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -204,9 +207,12 @@
 
   .size-guide-block__image {
     display: block;
-    width: 100%;
+    width: auto;
     height: auto;
     max-width: 100%;
+    max-height: calc(85vh - 80px);
+    object-fit: contain;
+    margin: 0 auto;
   }
 
   .size-guide-block__empty {
