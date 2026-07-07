@@ -17,6 +17,12 @@
   assign can_add_to_cart = false
   assign add_to_cart_text = 'products.product.unavailable' | t
 
+  assign is_preorder = false
+  if product.metafields.custom.is_preorder == true or product.metafields.custom.is_preorder == 'true'
+    assign is_preorder = true
+  endif
+  assign preorder_label = product.metafields.custom.preorder_label | default: 'Pre-order'
+
   if variant
     if variant.quantity_rule.min > variant.inventory_quantity and inventory_managed and inventory_policy == 'deny'
       assign quantity_rule_soldout = true
@@ -24,7 +30,11 @@
 
     if variant.available
       assign can_add_to_cart = true
-      assign add_to_cart_text = 'products.product.add_to_cart' | t
+      if is_preorder
+        assign add_to_cart_text = preorder_label
+      else
+        assign add_to_cart_text = 'products.product.add_to_cart' | t
+      endif
     elsif inventory_managed and inventory_quantity <= 0 and inventory_policy == 'deny' or quantity_rule_soldout
       assign can_add_to_cart = false
       assign add_to_cart_text = 'products.product.sold_out' | t
