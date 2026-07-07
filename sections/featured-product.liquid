@@ -13,9 +13,10 @@
 {% render 'buy-buttons-styles' %}
 {% render 'product-badges-styles' %}
 
-<span id="preorder" class="featured-product-anchor" aria-hidden="true"></span>
-<span id="buy" class="featured-product-anchor" aria-hidden="true"></span>
-<span id="featured-product" class="featured-product-anchor" aria-hidden="true"></span>
+{%- if section.settings.custom_anchor_id != blank -%}
+  {%- assign anchor_slug = section.settings.custom_anchor_id | handle -%}
+  <span id="{{ anchor_slug }}" class="featured-product-anchor" aria-hidden="true"></span>
+{%- endif -%}
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <div
@@ -130,6 +131,13 @@
       "type": "product",
       "id": "product",
       "label": "t:settings.product"
+    },
+    {
+      "type": "text",
+      "id": "custom_anchor_id",
+      "label": "Custom anchor ID (for smooth-scroll links)",
+      "info": "Set a unique ID like `preorder` or `buy` (no # or spaces). Then link to `#preorder` from a button on any section.",
+      "default": ""
     },
     {
       "type": "select",

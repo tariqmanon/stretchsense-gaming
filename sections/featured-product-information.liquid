@@ -22,9 +22,10 @@
   {% content_for 'blocks' %}
 {% endcapture %}
 
-<span id="preorder" class="fpi-anchor" aria-hidden="true"></span>
-<span id="buy" class="fpi-anchor" aria-hidden="true"></span>
-<span id="featured-product" class="fpi-anchor" aria-hidden="true"></span>
+{%- if section.settings.custom_anchor_id != blank -%}
+  {%- assign anchor_slug = section.settings.custom_anchor_id | handle -%}
+  <span id="{{ anchor_slug }}" class="fpi-anchor" aria-hidden="true"></span>
+{%- endif -%}
 
 <style>
   .fpi-anchor {
@@ -70,6 +71,13 @@
       "type": "product",
       "id": "product",
       "label": "t:settings.product"
+    },
+    {
+      "type": "text",
+      "id": "custom_anchor_id",
+      "label": "Custom anchor ID (for smooth-scroll links)",
+      "info": "Set a unique ID like `preorder` or `buy` (no # or spaces). Then link to `#preorder` from a button on any section.",
+      "default": ""
     },
     {
       "type": "header",
