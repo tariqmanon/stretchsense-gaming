@@ -449,22 +449,56 @@
     }
   }
 
+  @media (max-width: 900px) {
+    .feels-different__inner {
+      padding: 40px 20px;
+      gap: 32px;
+    }
+
+    .feels-different__heading {
+      font-size: 26px;
+    }
+
+    .feels-different__personas-heading {
+      font-size: 20px;
+    }
+  }
+
   @media (max-width: 560px) {
     .feels-different__inner {
-      padding: 40px 16px;
+      padding: 32px 12px;
+      gap: 24px;
     }
 
     .feels-different__compare {
-      grid-template-columns: 1fr;
-      padding: 20px 16px;
+      padding: 20px 10px;
     }
 
-    .feels-different__compare-divider {
-      padding-top: 0;
+    .feels-different__compare-grid {
+      column-gap: 24px;
+      row-gap: 10px;
+    }
+
+    .feels-different__compare-heading {
+      font-size: 11px;
+    }
+
+    .feels-different__compare-cell {
+      font-size: 12px;
+      white-space: normal;
+    }
+
+    .feels-different__col--personas {
+      padding: 24px 16px;
     }
 
     .feels-different__personas-grid {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .feels-different__persona-label {
+      font-size: 11px;
     }
   }
 {% endstylesheet %}

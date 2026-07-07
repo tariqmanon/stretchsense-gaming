@@ -593,13 +593,37 @@
 
   @media (max-width: 560px) {
     .wib__inner {
-      padding: 40px 16px;
+      padding: 32px 14px;
+      gap: 24px;
     }
     .wib__buy {
-      padding: 20px;
+      padding: 20px 16px;
     }
     .wib__price {
       font-size: 26px;
+    }
+    .wib__heading,
+    .wib__title {
+      font-size: 20px;
+    }
+    .wib__included-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .wib__sizes {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .wib__size {
+      padding: 10px 8px;
+      font-size: 13px;
+    }
+    .wib__inclusion-label {
+      font-size: 11px;
+    }
+    .wib__cta {
+      padding: 14px 20px;
+      font-size: 14px;
     }
   }
 {% endstylesheet %}

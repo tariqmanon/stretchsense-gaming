@@ -202,13 +202,35 @@
     }
   }
 
+  @media (max-width: 900px) {
+    .gameplay-grid__heading {
+      font-size: 20px;
+    }
+  }
+
   @media (max-width: 768px) {
     .gameplay-grid__inner {
-      padding: 28px 16px 36px;
+      padding: 24px 16px 32px;
+      gap: 20px;
     }
 
     .gameplay-grid__items {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .gameplay-grid__label {
+      font-size: 13px;
+      padding: 0 8px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .gameplay-grid__items {
+      gap: 10px;
+    }
+    .gameplay-grid__label {
+      font-size: 12px;
     }
   }
 {% endstylesheet %}
