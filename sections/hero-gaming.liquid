@@ -548,20 +548,24 @@
 
   @media (max-width: 900px) {
     .hero-gaming__inner {
-      grid-template-columns: 1fr;
-      padding: 32px 24px;
+      flex-direction: column;
+      padding: 32px 20px;
       gap: 24px;
       text-align: center;
+      min-height: auto;
     }
 
     .hero-gaming__copy {
       max-width: none;
+      width: 100%;
       align-items: center;
-      justify-self: center;
+      flex: 1 1 auto;
     }
 
     .hero-gaming__visual {
-      justify-self: center;
+      width: 100%;
+      max-width: 420px;
+      flex: 0 0 auto;
     }
 
     .hero-gaming__description {
@@ -569,15 +573,36 @@
     }
 
     .hero-gaming__headline {
-      font-size: 48px;
+      font-size: 40px;
     }
 
     .hero-gaming__subheadline {
-      font-size: 22px;
+      font-size: 20px;
     }
 
     .hero-gaming__price {
+      font-size: 28px;
+    }
+
+    .hero-gaming__ctas {
+      justify-content: center;
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .hero-gaming__inner {
+      padding: 24px 16px;
+    }
+    .hero-gaming__headline {
       font-size: 32px;
+    }
+    .hero-gaming__subheadline {
+      font-size: 18px;
+    }
+    .hero-gaming__cta {
+      padding: 12px 18px;
+      font-size: 13px;
     }
   }
 {% endstylesheet %}
