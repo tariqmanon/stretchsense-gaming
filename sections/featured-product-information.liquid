@@ -22,6 +22,26 @@
   {% content_for 'blocks' %}
 {% endcapture %}
 
+<span id="preorder" class="fpi-anchor" aria-hidden="true"></span>
+<span id="buy" class="fpi-anchor" aria-hidden="true"></span>
+<span id="featured-product" class="fpi-anchor" aria-hidden="true"></span>
+
+<style>
+  .fpi-anchor {
+    display: block;
+    position: relative;
+    top: -80px;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+    scroll-margin-top: 80px;
+  }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+</style>
+
 <featured-product-information id="{{ section.id }}">
   <h2 class="visually-hidden">{{ 'accessibility.featured_product' | t }}</h2>
   {% render 'product-information-content',
