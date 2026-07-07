@@ -13,6 +13,10 @@
 {% render 'buy-buttons-styles' %}
 {% render 'product-badges-styles' %}
 
+<span id="preorder" class="featured-product-anchor" aria-hidden="true"></span>
+<span id="buy" class="featured-product-anchor" aria-hidden="true"></span>
+<span id="featured-product" class="featured-product-anchor" aria-hidden="true"></span>
+
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <div
   class="
@@ -24,6 +28,21 @@
   style="--gallery-aspect-ratio: {{ gallery_aspect_ratio }};"
   data-testid="featured-product-{{ section.id }}"
 >
+<style>
+  .featured-product-anchor {
+    display: block;
+    position: relative;
+    top: -80px;
+    height: 1px;
+    width: 1px;
+    pointer-events: none;
+    scroll-margin-top: 80px;
+  }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+</style>
   <h2 class="visually-hidden">{{ 'accessibility.featured_product' | t }}</h2>
   <div
     class="section-content-wrapper spacing-style size-style border-style"
