@@ -43,12 +43,41 @@
         {%- endif -%}
 
         {%- if section.settings.secondary_label != blank -%}
-          <a
-            class="hero-gaming__cta hero-gaming__cta--secondary"
-            href="{{ section.settings.secondary_link | default: '#' }}"
-          >
-            {{ section.settings.secondary_label }}
-          </a>
+          {%- liquid
+            assign video_url = section.settings.secondary_link | default: ''
+            assign is_vimeo = false
+            assign is_youtube = false
+            if video_url contains 'vimeo.com'
+              assign is_vimeo = true
+            elsif video_url contains 'youtube.com' or video_url contains 'youtu.be'
+              assign is_youtube = true
+            endif
+            assign is_video = false
+            if is_vimeo or is_youtube
+              assign is_video = true
+            endif
+          -%}
+
+          {%- if is_video -%}
+            <button
+              type="button"
+              class="hero-gaming__cta hero-gaming__cta--secondary"
+              data-hero-video-open
+              aria-haspopup="dialog"
+            >
+              <svg class="hero-gaming__cta-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+              <span>{{ section.settings.secondary_label }}</span>
+            </button>
+          {%- else -%}
+            <a
+              class="hero-gaming__cta hero-gaming__cta--secondary"
+              href="{{ section.settings.secondary_link | default: '#' }}"
+            >
+              {{ section.settings.secondary_label }}
+            </a>
+          {%- endif -%}
         {%- endif -%}
       </div>
     </div>
@@ -77,9 +106,93 @@
       {%- endif -%}
     </div>
   </div>
+
+  {%- if is_video -%}
+    {%- liquid
+      assign embed_url = ''
+      if is_vimeo
+        assign vimeo_parts = video_url | split: 'vimeo.com/'
+        assign vimeo_id_raw = vimeo_parts.last | split: '?' | first | split: '/' | first
+        assign embed_url = 'https://player.vimeo.com/video/' | append: vimeo_id_raw | append: '?autoplay=1&title=0&byline=0&portrait=0'
+      elsif is_youtube
+        if video_url contains 'youtu.be/'
+          assign yt_parts = video_url | split: 'youtu.be/'
+          assign yt_id = yt_parts.last | split: '?' | first
+        else
+          assign yt_parts = video_url | split: 'v='
+          assign yt_id = yt_parts.last | split: '&' | first
+        endif
+        assign embed_url = 'https://www.youtube.com/embed/' | append: yt_id | append: '?autoplay=1&rel=0'
+      endif
+    -%}
+    <div
+      class="hero-gaming__video-modal"
+      data-hero-video-modal
+      data-embed-url="{{ embed_url }}"
+      hidden
+      role="dialog"
+      aria-modal="true"
+      aria-label="Watch demo video"
+    >
+      <div class="hero-gaming__video-backdrop" data-hero-video-close></div>
+      <div class="hero-gaming__video-panel" role="document">
+        <button
+          type="button"
+          class="hero-gaming__video-close"
+          data-hero-video-close
+          aria-label="Close video"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18"/>
+          </svg>
+        </button>
+        <div class="hero-gaming__video-frame" data-hero-video-frame></div>
+      </div>
+    </div>
+  {%- endif -%}
 </section>
 
 <script src="{{ 'gaming-animations.js' | asset_url }}" defer></script>
+
+{%- if is_video -%}
+  <script>
+    (function () {
+      var section = document.getElementById('hero-gaming-{{ section_id }}');
+      if (!section || section.__heroVideoInit) return;
+      section.__heroVideoInit = true;
+
+      var modal = section.querySelector('[data-hero-video-modal]');
+      var openBtn = section.querySelector('[data-hero-video-open]');
+      var closers = section.querySelectorAll('[data-hero-video-close]');
+      var frame = section.querySelector('[data-hero-video-frame]');
+      var embedUrl = modal ? modal.getAttribute('data-embed-url') : '';
+      var body = document.body;
+
+      if (!modal || !openBtn || !embedUrl) return;
+
+      function open() {
+        frame.innerHTML = '<iframe src="' + embedUrl + '" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="Watch demo"></iframe>';
+        modal.hidden = false;
+        body.style.overflow = 'hidden';
+      }
+
+      function close() {
+        modal.hidden = true;
+        frame.innerHTML = '';
+        body.style.overflow = '';
+        openBtn.focus();
+      }
+
+      openBtn.addEventListener('click', open);
+      closers.forEach(function (el) {
+        el.addEventListener('click', close);
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !modal.hidden) close();
+      });
+    })();
+  </script>
+{%- endif -%}
 
 {% stylesheet %}
   .hero-gaming {
@@ -257,6 +370,126 @@
   .hero-gaming__cta--secondary:hover {
     background: rgba(255, 255, 255, 0.08);
     border-color: #c084fc;
+  }
+
+  .hero-gaming__cta--secondary {
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .hero-gaming__cta-play {
+    width: 14px;
+    height: 14px;
+    color: #c084fc;
+    transition: transform 200ms ease;
+  }
+
+  .hero-gaming__cta--secondary:hover .hero-gaming__cta-play {
+    transform: scale(1.15);
+  }
+
+  /* --- Video modal --- */
+  .hero-gaming__video-modal[hidden] {
+    display: none;
+  }
+
+  .hero-gaming__video-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .hero-gaming__video-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    cursor: pointer;
+    animation: hero-video-fade 250ms ease;
+  }
+
+  .hero-gaming__video-panel {
+    position: relative;
+    width: 100%;
+    max-width: 1100px;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(168, 85, 247, 0.25);
+    animation: hero-video-scale 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .hero-gaming__video-frame {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero-gaming__video-frame iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+
+  .hero-gaming__video-close {
+    position: absolute;
+    top: -50px;
+    right: 0;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #fff;
+    transition: background 150ms ease, transform 150ms ease;
+    z-index: 2;
+  }
+
+  .hero-gaming__video-close:hover {
+    background: rgba(168, 85, 247, 0.3);
+    transform: scale(1.05);
+  }
+
+  .hero-gaming__video-close:focus-visible {
+    outline: 2px solid #c084fc;
+    outline-offset: 2px;
+  }
+
+  @keyframes hero-video-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes hero-video-scale {
+    from { opacity: 0; transform: scale(0.95); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  @media (max-width: 640px) {
+    .hero-gaming__video-modal {
+      padding: 16px;
+    }
+    .hero-gaming__video-close {
+      top: -46px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-gaming__video-backdrop,
+    .hero-gaming__video-panel {
+      animation: none;
+    }
   }
 
   .hero-gaming__visual {
