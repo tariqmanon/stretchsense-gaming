@@ -1,10 +1,11 @@
 {%- comment -%}
   Truncated product description with "Read more" toggle.
+  Preserves ALL HTML formatting (paragraphs, lists, headings) via CSS line-clamp.
 
   Usage inside a Custom Liquid block on any product-context section:
     {% render 'product-description-truncate' %}
-    {% render 'product-description-truncate', words: 100 %}
-    {% render 'product-description-truncate', words: 200, expand: 'See more', collapse: 'Hide' %}
+    {% render 'product-description-truncate', lines: 8 %}
+    {% render 'product-description-truncate', lines: 6, expand: 'See more', collapse: 'Hide' %}
 {%- endcomment -%}
 
 {%- liquid
@@ -13,48 +14,35 @@
     assign p = product
   endif
 
-  assign word_limit = words | default: 150
+  assign line_limit = lines | default: 6
   assign expand_label = expand | default: 'Read more'
   assign collapse_label = collapse | default: 'Read less'
 
   assign full_html = p.description
-  assign plain_text = full_html | strip_html | strip_newlines | strip
-  assign word_count = plain_text | split: ' ' | size
-  assign needs_truncate = false
-  if word_count > word_limit
-    assign needs_truncate = true
-  endif
-  assign short_text = plain_text | truncatewords: word_limit, '...'
-  assign unique_id = p.id | append: '-' | append: word_limit
+  assign plain_probe = full_html | strip_html | strip
+  assign unique_id = p.id | append: '-' | append: line_limit
 -%}
 
-{%- if plain_text != blank -%}
+{%- if plain_probe != blank -%}
   <div class="pd-truncate" data-pd-truncate="{{ unique_id }}">
-    {%- if needs_truncate -%}
-      <div class="pd-truncate__short" data-pd-short>
-        <p>{{ short_text }}</p>
-      </div>
-      <div class="pd-truncate__full" data-pd-full hidden>
-        {{ full_html }}
-      </div>
-      <button
-        type="button"
-        class="pd-truncate__toggle"
-        data-pd-toggle
-        data-expand="{{ expand_label | escape }}"
-        data-collapse="{{ collapse_label | escape }}"
-        aria-expanded="false"
-      >
-        <span data-pd-label>{{ expand_label }}</span>
-        <svg class="pd-truncate__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="6 9 12 15 18 9"/>
-        </svg>
-      </button>
-    {%- else -%}
-      <div class="pd-truncate__full">
-        {{ full_html }}
-      </div>
-    {%- endif -%}
+    <div class="pd-truncate__body" data-pd-body style="--pd-lines: {{ line_limit }};">
+      {{ full_html }}
+    </div>
+
+    <button
+      type="button"
+      class="pd-truncate__toggle"
+      data-pd-toggle
+      data-expand="{{ expand_label | escape }}"
+      data-collapse="{{ collapse_label | escape }}"
+      aria-expanded="false"
+      hidden
+    >
+      <span data-pd-label>{{ expand_label }}</span>
+      <svg class="pd-truncate__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </button>
   </div>
 
   <style>
@@ -64,18 +52,78 @@
       color: inherit;
     }
 
-    .pd-truncate__short p,
-    .pd-truncate__full p {
+    .pd-truncate__body {
+      position: relative;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: var(--pd-lines, 6);
+      line-clamp: var(--pd-lines, 6);
+      -webkit-box-orient: vertical;
+      transition: max-height 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .pd-truncate__body::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 32px;
+      background: linear-gradient(180deg, transparent 0%, var(--pd-fade, #000) 100%);
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 200ms ease;
+    }
+
+    .pd-truncate[data-expanded="true"] .pd-truncate__body {
+      display: block;
+      -webkit-line-clamp: unset;
+      line-clamp: unset;
+    }
+
+    .pd-truncate[data-expanded="true"] .pd-truncate__body::after {
+      opacity: 0;
+    }
+
+    .pd-truncate__body p,
+    .pd-truncate__body ul,
+    .pd-truncate__body ol {
       margin: 0 0 12px;
     }
 
-    .pd-truncate__short p:last-child,
-    .pd-truncate__full p:last-child {
+    .pd-truncate__body p:last-child,
+    .pd-truncate__body ul:last-child,
+    .pd-truncate__body ol:last-child {
       margin-bottom: 0;
     }
 
-    .pd-truncate__full[hidden] {
-      display: none;
+    .pd-truncate__body ul,
+    .pd-truncate__body ol {
+      padding-left: 20px;
+    }
+
+    .pd-truncate__body li {
+      margin-bottom: 4px;
+    }
+
+    .pd-truncate__body h1,
+    .pd-truncate__body h2,
+    .pd-truncate__body h3,
+    .pd-truncate__body h4,
+    .pd-truncate__body h5,
+    .pd-truncate__body h6 {
+      margin: 16px 0 8px;
+      font-weight: 700;
+    }
+
+    .pd-truncate__body h1:first-child,
+    .pd-truncate__body h2:first-child,
+    .pd-truncate__body h3:first-child {
+      margin-top: 0;
+    }
+
+    .pd-truncate__body strong {
+      font-weight: 700;
     }
 
     .pd-truncate__toggle {
@@ -93,6 +141,10 @@
       font-weight: 600;
       letter-spacing: 0.02em;
       transition: color 150ms ease;
+    }
+
+    .pd-truncate__toggle[hidden] {
+      display: none;
     }
 
     .pd-truncate__toggle:hover,
@@ -120,22 +172,26 @@
       if (!wrap || wrap.__pdTruncateInit) return;
       wrap.__pdTruncateInit = true;
 
+      var body = wrap.querySelector('[data-pd-body]');
       var toggle = wrap.querySelector('[data-pd-toggle]');
-      var shortEl = wrap.querySelector('[data-pd-short]');
-      var fullEl = wrap.querySelector('[data-pd-full]');
       var label = wrap.querySelector('[data-pd-label]');
-      if (!toggle || !fullEl) return;
+      if (!body || !toggle) return;
+
+      // Only show the toggle if content actually overflows
+      requestAnimationFrame(function () {
+        if (body.scrollHeight > body.clientHeight + 2) {
+          toggle.hidden = false;
+        }
+      });
 
       toggle.addEventListener('click', function () {
         var expanded = toggle.getAttribute('aria-expanded') === 'true';
         if (expanded) {
-          fullEl.hidden = true;
-          if (shortEl) shortEl.hidden = false;
+          wrap.setAttribute('data-expanded', 'false');
           toggle.setAttribute('aria-expanded', 'false');
           if (label) label.textContent = toggle.getAttribute('data-expand');
         } else {
-          fullEl.hidden = false;
-          if (shortEl) shortEl.hidden = true;
+          wrap.setAttribute('data-expanded', 'true');
           toggle.setAttribute('aria-expanded', 'true');
           if (label) label.textContent = toggle.getAttribute('data-collapse');
         }
