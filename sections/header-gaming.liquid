@@ -179,6 +179,16 @@
     </div>
 
     <div class="header-gaming__actions">
+      {%- if localization.available_languages.size > 1 -%}
+        <div class="header-gaming__language">
+          {%- render 'localization-form',
+            show_country: false,
+            show_language: true,
+            form_id: section.id,
+            localization_style: 'dropdown'
+          -%}
+        </div>
+      {%- endif -%}
       {%- render 'header-actions', section: section, display_style: 'icon' -%}
     </div>
   </div>
@@ -476,6 +486,46 @@
 
   .header-gaming__cta:hover {
     background: rgba(168, 85, 247, 0.15);
+  }
+
+  /* === Language selector === */
+  .header-gaming__language {
+    display: inline-flex;
+    align-items: center;
+    font-family: inherit;
+  }
+
+  .header-gaming__language localization-form-component {
+    background: transparent;
+  }
+
+  .header-gaming__language button,
+  .header-gaming__language [role="button"] {
+    background: transparent !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #fff !important;
+    font-family: 'Montserrat', system-ui, sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    padding: 6px 10px !important;
+    border-radius: 6px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: background 150ms ease, border-color 150ms ease;
+  }
+
+  .header-gaming__language button:hover,
+  .header-gaming__language [role="button"]:hover {
+    background: rgba(168, 85, 247, 0.15) !important;
+    border-color: #a855f7 !important;
+  }
+
+  @media (max-width: 640px) {
+    .header-gaming__language button,
+    .header-gaming__language [role="button"] {
+      font-size: 11px !important;
+      padding: 5px 8px !important;
+    }
   }
 
   /* === Theme header-actions snippet adapted to our dark theme === */
