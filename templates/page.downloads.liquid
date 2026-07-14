@@ -3,13 +3,20 @@
 
   Access rules (NON-NEGOTIABLE):
     1. Customer MUST be logged in. Anonymous visitors see only a login screen.
-    2. Customer MUST have purchased the product. Page reads customer.orders and
-       only renders SDK cards for products they actually bought.
+    2. Customer MUST own the product, proven one of two ways:
+       a) Shopify order history (customer.orders line items), OR
+       b) legacy ownership tag `owns-<product-handle>` (migrated WooCommerce
+          customers — tags applied during the customer CSV import).
     3. SDK URLs (custom.sdk_download_url) are never rendered in HTML to anyone
-       who fails the login + purchase checks.
+       who fails the login + ownership checks.
 
   Adding a new product: set its custom.sdk_download_url metafield in admin —
   buyers of that product will see their card automatically. No code change.
+
+  Legacy products (Hand Engine Lite, XR Game App, etc.): create a product in
+  admin whose handle matches the tag suffix (tag owns-hand-engine-lite ->
+  handle hand-engine-lite), hide it from catalog/search, and set its
+  custom.sdk_download_url metafield (a Dropbox link works).
 {% endcomment %}
 
 <section class="downloads-gaming">
@@ -53,6 +60,18 @@
             {%- assign purchased_handles = purchased_handles | append: ',' | append: line.product.handle -%}
           {%- endif -%}
         {%- endfor -%}
+      {%- endfor -%}
+
+      {%- comment -%} Legacy WooCommerce customers: ownership via owns-<handle> tags {%- endcomment -%}
+      {%- for tag in customer.tags -%}
+        {%- assign t = tag | strip | downcase -%}
+        {%- assign t_prefix = t | slice: 0, 5 -%}
+        {%- if t_prefix == 'owns-' -%}
+          {%- assign legacy_handle = t | remove_first: 'owns-' -%}
+          {%- if legacy_handle != blank -%}
+            {%- assign purchased_handles = purchased_handles | append: ',' | append: legacy_handle -%}
+          {%- endif -%}
+        {%- endif -%}
       {%- endfor -%}
 
       {%- assign handle_list = purchased_handles | split: ',' | uniq -%}
